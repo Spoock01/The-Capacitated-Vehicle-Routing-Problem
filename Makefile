@@ -1,3 +1,7 @@
 all:
-	g++ source/main.cpp -o source/main.exe
-	source/main.exe
+	mkdir -p dist
+	g++  include/*.h src/*.cpp -o dist/main.exe
+	dist/main.exe
+
+clean:
+	rm -r dist
