@@ -8,5 +8,4 @@ Demand::Demand(int client, int client_demand)
 
 Demand::~Demand()
 {
-    int i = 0;
 }

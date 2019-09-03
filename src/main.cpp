@@ -13,7 +13,9 @@ int main()
     {
         menu(); // helper.h
         readFile(get_file_name());
-        system("pause");
+        std::cin.get();
+        std::cout << "Press enter to continue ...";
+        std::cin.get();
     }
 
     return 0;
