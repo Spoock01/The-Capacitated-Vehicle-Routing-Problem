@@ -113,7 +113,8 @@ void read_matrix(std::vector<std::vector<int>> &weightMatrix)
             else
             {
                 getline(instanceFile, line);
-                weightMatrix[i][j] = 0;
+                // weightMatrix[i][j] = 0;
+                weightMatrix[i][j] = demands[i].getClientDemand();
                 break;
             }
         }
@@ -141,6 +142,40 @@ void skip(int times)
     }
 }
 
+void nearestRoute() {
+    bool visitedVertex[DIMENSION];
+    int distance = 0;
+    int minor, visitedCount = 0, vertex = 0, aux = 0;
+    std::vector<int> route;
+
+    for(int i=0; i < DIMENSION; i++) {
+        visitedVertex[i] = false;
+    }
+
+    route.push_back(0);
+    while(visitedCount < DIMENSION) {
+        minor = 999;
+        for(int j = 0; j < DIMENSION; j++) {
+            if(j != vertex && weightMatrix[vertex][j] < minor && !visitedVertex[j]) {
+                minor = weightMatrix[vertex][j];
+                aux = j;
+            }
+        }
+        if(aux != 0) visitedVertex[aux] = true;
+        route.push_back(aux);
+        vertex = aux;
+        std::cout << "Onde vou: " << vertex << " O que andei: " << minor;
+        std::cout << " O que carreguei: " << weightMatrix[vertex][vertex] << std::endl;
+        distance += minor;
+        visitedCount++;
+    }
+
+    std::cout << "ROUTE: { ";
+    for(int i = 0; i < route.size(); i++)
+        std::cout << route[i] << " ";
+    std::cout << "}\nDistance = " << distance << std::endl;
+}
+
 void readFile(std::string file)
 {
     std::string line;
@@ -156,6 +191,7 @@ void readFile(std::string file)
         skip(3);         // Skipping DEMAND_SECTION, empty and EDGE_WEIGHT_SECTION
         read_matrix(weightMatrix);
         show(weightMatrix);
+        nearestRoute();
         instanceFile.close();
     }
     else

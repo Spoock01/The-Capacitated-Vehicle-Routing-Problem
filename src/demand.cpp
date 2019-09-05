@@ -9,3 +9,7 @@ Demand::Demand(int client, int client_demand)
 Demand::~Demand()
 {
 }
+
+int Demand::getClientDemand() {
+    return this->_client_demand;
+}
