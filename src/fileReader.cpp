@@ -66,15 +66,15 @@ void split_integer()
         {
         case 0:
             DIMENSION = std::stoi(token);
-            std::cout << "Dimension " << DIMENSION << std::endl;
+            // std::cout << "DIMENSION: " << DIMENSION << std::endl;
             break;
         case 1:
             VEHICLE = std::stoi(token);
-            std::cout << "VEHICLE " << VEHICLE << std::endl;
+            // std::cout << "VEHICLE: " << VEHICLE << std::endl;
             break;
         case 2:
             CAPACITY = std::stoi(token);
-            std::cout << "CAPACITY " << CAPACITY << std::endl;
+            // std::cout << "CAPACITY: " << CAPACITY << std::endl;
             break;
         default:
             return;
@@ -98,7 +98,7 @@ void read_demands()
 void read_matrix(std::vector<std::vector<int>> &weightMatrix)
 {
     std::string line;
-    std::cout << "size: " << weightMatrix.size() << std::endl;
+    // std::cout << "size: " << weightMatrix.size() << std::endl;
     int aux = -1;
     for (int i = 0; i < DIMENSION; i++)
     {
@@ -142,7 +142,8 @@ void skip(int times)
     }
 }
 
-void nearestNeighbor() {
+void nearestNeighbor()
+{
     /*
         visitedVertex: a array to know which vertex has been visited
         distance: to count the distance
@@ -157,17 +158,22 @@ void nearestNeighbor() {
     int load = 0;
     std::vector<int> route;
 
-    for(int i=0; i < DIMENSION; i++) {
+    for (int i = 0; i < DIMENSION; i++)
+    {
         visitedVertex[i] = false;
     }
 
     route.push_back(0);
-    while(visitedCount < DIMENSION - 1) {
+    while (visitedCount < DIMENSION - 1)
+    {
         shortestRoute = 999;
 
-        for(int j = 0; j < DIMENSION; j++) {
-            if(j != vertex && weightMatrix[vertex][j] < shortestRoute && !visitedVertex[j]) {
-                if((load + weightMatrix[j][j]) <= CAPACITY){
+        for (int j = 0; j < DIMENSION; j++)
+        {
+            if (j != vertex && weightMatrix[vertex][j] < shortestRoute && !visitedVertex[j])
+            {
+                if ((load + weightMatrix[j][j]) <= CAPACITY)
+                {
                     shortestRoute = weightMatrix[vertex][j];
                     aux = j;
                 }
@@ -177,10 +183,13 @@ void nearestNeighbor() {
         vertex = aux;
         distance += shortestRoute;
         load += weightMatrix[vertex][vertex];
-        if(aux != 0) {
+        if (aux != 0)
+        {
             visitedVertex[aux] = true;
             visitedCount++;
-        } else {
+        }
+        else
+        {
             load = 0;
         }
     }
@@ -189,7 +198,7 @@ void nearestNeighbor() {
     distance += weightMatrix[vertex][0];
 
     std::cout << "ROUTE: { ";
-    for(int i = 0; i < route.size(); i++)
+    for (int i = 0; i < route.size(); i++)
         std::cout << route[i] << " ";
     std::cout << "}\nDistance = " << distance << std::endl;
 }
@@ -208,7 +217,7 @@ void readFile(std::string file)
         read_demands();  // Reading DEMAND_SECTION
         skip(3);         // Skipping DEMAND_SECTION, empty and EDGE_WEIGHT_SECTION
         read_matrix(weightMatrix);
-        show(weightMatrix);
+        // show(weightMatrix);
         nearestNeighbor();
         instanceFile.close();
     }
