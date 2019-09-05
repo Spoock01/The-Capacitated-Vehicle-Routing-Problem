@@ -1,10 +1,14 @@
+#ifndef GRAPH_H
+#define GRAPH_H
+
 #include <iostream>
 #include <vector>
 
-class Graph {
+class Graph
+{
 
 private:
-    int** _adjMatrix;
+    int **_adjMatrix;
     int _vertexSize;
 
 public:
@@ -15,3 +19,5 @@ public:
     void printMatrix();
     void nearestNeighbor(int capacity);
 };
+
+#endif

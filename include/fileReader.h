@@ -6,9 +6,9 @@
 #include <fstream>
 #include <string.h>
 #include <vector>
-#include "../include/demand.h"
+#include "../include/Demand.h"
 
-std::string get_file_name();
+std::string getFileName();
 
 int getDimension();
 int getVehicle();

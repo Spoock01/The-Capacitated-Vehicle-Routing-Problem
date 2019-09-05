@@ -1,4 +1,4 @@
-#include "../include/demand.h"
+#include "../include/Demand.h"
 
 Demand::Demand(int client, int client_demand)
 {
@@ -10,6 +10,7 @@ Demand::~Demand()
 {
 }
 
-int Demand::getClientDemand() {
+int Demand::getClientDemand()
+{
     return this->_client_demand;
 }

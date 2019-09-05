@@ -2,8 +2,8 @@
 #include <vector>
 #include <fstream>
 #include <string>
-#include "../include/helper.h"
-#include "../include/fileReader.h"
+#include "../include/Helper.h"
+#include "../include/FileReader.h"
 
 using namespace std;
 
@@ -12,7 +12,7 @@ int main()
     while (true)
     {
         menu(); // helper.h
-        readFile(get_file_name());
+        readFile(getFileName());
         std::cin.get();
         std::cout << "Press enter to continue ...";
         std::cin.get();

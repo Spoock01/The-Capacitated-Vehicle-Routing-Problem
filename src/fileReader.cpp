@@ -1,4 +1,4 @@
-#include "../include/fileReader.h"
+#include "../include/FileReader.h"
 
 const std::string INSTANCE_PATH = "./instancias_teste/";
 
@@ -24,7 +24,7 @@ int getCapacity()
     return CAPACITY;
 }
 
-std::string get_file_name()
+std::string getFileName()
 {
     int fileNumber = -1;
     std::cin >> fileNumber;
@@ -53,7 +53,7 @@ std::string get_file_name()
     }
 }
 
-void split_integer()
+void splitInteger()
 {
     std::string line;
     for (int i = 0; i < 3; i++)
@@ -84,7 +84,7 @@ void split_integer()
     weightMatrix = aux;
 }
 
-void read_demands()
+void readDemands()
 {
     int client, client_demand;
     for (int i = 0; i < DIMENSION; i++)
@@ -95,7 +95,7 @@ void read_demands()
     }
 }
 
-void read_matrix(std::vector<std::vector<int>> &weightMatrix)
+void readMatrix(std::vector<std::vector<int>> &weightMatrix)
 {
     std::string line;
     // std::cout << "size: " << weightMatrix.size() << std::endl;
@@ -211,12 +211,12 @@ void readFile(std::string file)
 
     if (instanceFile.is_open())
     {
-        skip(1);         //Skipping NAME
-        split_integer(); // Dimension, VEHICLE, CAPACITY
-        skip(1);         // Skipping DEMAND_SECTION line
-        read_demands();  // Reading DEMAND_SECTION
-        skip(3);         // Skipping DEMAND_SECTION, empty and EDGE_WEIGHT_SECTION
-        read_matrix(weightMatrix);
+        skip(1);        //Skipping NAME
+        splitInteger(); // Dimension, VEHICLE, CAPACITY
+        skip(1);        // Skipping DEMAND_SECTION line
+        readDemands();  // Reading DEMAND_SECTION
+        skip(3);        // Skipping DEMAND_SECTION, empty and EDGE_WEIGHT_SECTION
+        readMatrix(weightMatrix);
         // show(weightMatrix);
         nearestNeighbor();
         instanceFile.close();
