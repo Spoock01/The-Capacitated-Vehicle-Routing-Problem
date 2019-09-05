@@ -13,5 +13,5 @@ public:
     void addEdge(int u, int v, int weight);
     void addDemand(int v, int demand);
     void printMatrix();
-    void nearestRoute();
+    void nearestNeighbor(int capacity);
 };

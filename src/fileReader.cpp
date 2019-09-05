@@ -142,10 +142,19 @@ void skip(int times)
     }
 }
 
-void nearestRoute() {
+void nearestNeighbor() {
+    /*
+        visitedVertex: a array to know which vertex has been visited
+        distance: to count the distance
+        shortestRoute: to know which is the shortest route
+        visitedCount: a visited vertex counter to know if all vertex has been visited
+        vertex: to know the current vertex
+        load: to count how much has been loaded
+    */
     bool visitedVertex[DIMENSION];
     int distance = 0;
-    int minor, visitedCount = 0, vertex = 0, aux = 0;
+    int shortestRoute, visitedCount = 0, vertex = 0, aux = 0;
+    int load = 0;
     std::vector<int> route;
 
     for(int i=0; i < DIMENSION; i++) {
@@ -153,22 +162,31 @@ void nearestRoute() {
     }
 
     route.push_back(0);
-    while(visitedCount < DIMENSION) {
-        minor = 999;
+    while(visitedCount < DIMENSION - 1) {
+        shortestRoute = 999;
+
         for(int j = 0; j < DIMENSION; j++) {
-            if(j != vertex && weightMatrix[vertex][j] < minor && !visitedVertex[j]) {
-                minor = weightMatrix[vertex][j];
-                aux = j;
+            if(j != vertex && weightMatrix[vertex][j] < shortestRoute && !visitedVertex[j]) {
+                if((load + weightMatrix[j][j]) <= CAPACITY){
+                    shortestRoute = weightMatrix[vertex][j];
+                    aux = j;
+                }
             }
         }
-        if(aux != 0) visitedVertex[aux] = true;
         route.push_back(aux);
         vertex = aux;
-        std::cout << "Onde vou: " << vertex << " O que andei: " << minor;
-        std::cout << " O que carreguei: " << weightMatrix[vertex][vertex] << std::endl;
-        distance += minor;
-        visitedCount++;
+        distance += shortestRoute;
+        load += weightMatrix[vertex][vertex];
+        if(aux != 0) {
+            visitedVertex[aux] = true;
+            visitedCount++;
+        } else {
+            load = 0;
+        }
     }
+
+    route.push_back(0);
+    distance += weightMatrix[vertex][0];
 
     std::cout << "ROUTE: { ";
     for(int i = 0; i < route.size(); i++)
@@ -191,7 +209,7 @@ void readFile(std::string file)
         skip(3);         // Skipping DEMAND_SECTION, empty and EDGE_WEIGHT_SECTION
         read_matrix(weightMatrix);
         show(weightMatrix);
-        nearestRoute();
+        nearestNeighbor();
         instanceFile.close();
     }
     else
