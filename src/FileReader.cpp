@@ -5,23 +5,24 @@ const std::string INSTANCE_PATH = "./instancias_teste/";
 int DIMENSION;
 int VEHICLE;
 int CAPACITY;
+int g_distance = 0;
 std::ifstream instanceFile;
 std::vector<Demand> demands;
-std::vector<std::vector<int>> weightMatrix(1);
+std::vector<std::vector<int>> weightMatrix;
 
-int getDimension()
-{
-    return DIMENSION;
-}
+int getDimension() { return DIMENSION; }
 
-int getVEHICLE()
-{
-    return VEHICLE;
-}
+int getVEHICLE() { return VEHICLE; }
 
-int getCapacity()
+int getCapacity() { return CAPACITY; }
+
+void printVector(std::vector<int> route)
 {
-    return CAPACITY;
+    for (auto i : route)
+    {
+        std::cout << i << " ";
+    }
+    std::cout << "\n";
 }
 
 std::string getFileName()
@@ -48,7 +49,9 @@ std::string getFileName()
     case 0:
         exit(0);
     default:
-        std::cout << "Invalid option! File 'P-n19-k2.txt' has been selected as the default option." << std::endl;
+        std::cout << "Invalid option! File 'P-n19-k2.txt' has been selected as the "
+                     "default option."
+                  << std::endl;
         return INSTANCE_PATH + "P-n19-k2.txt";
     }
 }
@@ -113,8 +116,8 @@ void readMatrix(std::vector<std::vector<int>> &weightMatrix)
             else
             {
                 getline(instanceFile, line);
-                weightMatrix[i][j] = 0;
-                // weightMatrix[i][j] = demands[i].getClientDemand();
+                // weightMatrix[i][j] = 0;
+                weightMatrix[i][j] = demands[i].getClientDemand();
                 break;
             }
         }
@@ -142,23 +145,92 @@ void skip(int times)
     }
 }
 
+void getRouteAndDistance(std::vector<int> route, int distance)
+{
+    std::cout << "ROUTE: { ";
+    printVector(route);
+    std::cout << "}\nDistance = " << distance << std::endl;
+}
+
+int getDistance(std::vector<int> route)
+{
+    auto count = 0;
+    for (auto i = 0; i < route.size() - 1; i++)
+    {
+        count = count + weightMatrix[route[i]][route[i + 1]];
+    }
+    return count;
+}
+
+auto changingRoutes(std::vector<int> mainRoute)
+{
+    // mainRoute.pop_back();
+    // mainRoute.erase(mainRoute.begin());
+
+    std::vector<std::vector<int>> allRoutes;
+    auto saveRoute = mainRoute;
+
+    for (auto i = 0; i < mainRoute.size(); i++)
+    {
+        for (auto j = 0; j < mainRoute.size(); j++)
+        {
+            if (j > i)
+            {
+                std::swap(saveRoute[i], saveRoute[j]);
+                allRoutes.push_back(saveRoute);
+            }
+        }
+        saveRoute = mainRoute;
+    }
+
+    // std::cout << "SHOWING ALL POSSIBLE ROUTES: \n\n";
+
+    // auto k = 0;
+
+    // for (auto i = 0; i < allRoutes.size(); i++)
+    // {
+    //     std::cout << "Route #" << k << std::endl;
+    //     for (auto j = 0; j < allRoutes[i].size(); j++)
+    //     {
+    //         std::cout << allRoutes[i][j] << " ";
+    //     }
+    //     std::cout << std::endl;
+    //     ++k;
+    // }
+
+    for (auto i = 0; i < allRoutes.size(); i++)
+    {
+        auto currentDistance = getDistance(allRoutes[i]);
+
+        if (currentDistance < g_distance)
+        {
+            std::cout << "This route is better: ";
+            printVector(allRoutes[i]);
+            std::cout << "Best current distance: " << currentDistance << std::endl;
+            g_distance = currentDistance;
+        }
+    }
+
+    return allRoutes;
+}
+
 void nearestNeighbor()
 {
     /*
-        visitedVertex: a array to know which vertex has been visited
-        distance: to count the distance
-        shortestRoute: to know which is the shortest route
-        visitedCount: a visited vertex counter to know if all vertex has been visited
-        vertex: to know the current vertex
-        load: to count how much has been loaded
-    */
-    bool visitedVertex[DIMENSION];
-    int distance = 0;
-    int shortestRoute, visitedCount = 0, vertex = 0, aux = 0;
-    int load = 0;
+      visitedVertex: a array to know which vertex has been visited
+      distance: to count the distance
+      shortestRoute: to know which is the shortest route
+      visitedCount: a visited vertex counter to know if all vertex has been
+     visited vertex: to know the current vertex load: to count how much has been
+     loaded
+  */
+    auto visitedVertex = new bool[DIMENSION];
+    auto distance = 0;
+    auto shortestRoute = 999, visitedCount = 0, vertex = 0, aux = 0;
+    auto load = 0;
     std::vector<int> route;
 
-    for (int i = 0; i < DIMENSION; i++)
+    for (auto i = 0; i < DIMENSION; i++)
     {
         visitedVertex[i] = false;
     }
@@ -170,9 +242,10 @@ void nearestNeighbor()
 
         for (int j = 0; j < DIMENSION; j++)
         {
-            if (j != vertex && weightMatrix[vertex][j] < shortestRoute && !visitedVertex[j])
+            if (j != vertex && weightMatrix[vertex][j] < shortestRoute &&
+                !visitedVertex[j])
             {
-                if ((load + demands[j].getClientDemand()) <= CAPACITY)
+                if ((load + weightMatrix[j][j]) <= CAPACITY)
                 {
                     shortestRoute = weightMatrix[vertex][j];
                     aux = j;
@@ -182,7 +255,8 @@ void nearestNeighbor()
         route.push_back(aux);
         vertex = aux;
         distance += shortestRoute;
-        load += demands[vertex].getClientDemand();
+        load += weightMatrix[vertex][vertex];
+
         if (aux != 0)
         {
             visitedVertex[aux] = true;
@@ -196,18 +270,9 @@ void nearestNeighbor()
 
     route.push_back(0);
     distance += weightMatrix[vertex][0];
-
-    // std::cout << distance << " ROUTE: { ";
-    std::cout << " ROUTE: { ";
-    for (int i = 0; i < route.size(); i++)
-        std::cout << route[i] << " ";
-    // std::cout << "}\n";
-    std::cout << "}\nDistance = " << distance << std::endl;
-}
-
-void printDemand() {
-    for (int i = 0; i < demands.size(); i++)
-        std::cout << i << " = " << demands[i].getClientDemand() << std::endl;
+    g_distance = distance;
+    getRouteAndDistance(route, distance);
+    changingRoutes(route);
 }
 
 void readFile(std::string file)
@@ -218,17 +283,14 @@ void readFile(std::string file)
 
     if (instanceFile.is_open())
     {
-        skip(1);        //Skipping NAME
+        skip(1);        // Skipping NAME
         splitInteger(); // Dimension, VEHICLE, CAPACITY
         skip(1);        // Skipping DEMAND_SECTION line
         readDemands();  // Reading DEMAND_SECTION
         skip(3);        // Skipping DEMAND_SECTION, empty and EDGE_WEIGHT_SECTION
         readMatrix(weightMatrix);
-        // show(weightMatrix);
-        // printDemand();
-        instanceFile.close();
         nearestNeighbor();
-        demands.clear();
+        instanceFile.close();
     }
     else
     {

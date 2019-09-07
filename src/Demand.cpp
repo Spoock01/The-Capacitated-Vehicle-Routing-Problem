@@ -6,11 +6,4 @@ Demand::Demand(int client, int client_demand)
     this->_client_demand = client_demand;
 }
 
-Demand::~Demand()
-{
-}
-
-int Demand::getClientDemand()
-{
-    return this->_client_demand;
-}
+int Demand::getClientDemand() { return this->_client_demand; }
