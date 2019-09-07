@@ -4,6 +4,7 @@
 #include <string>
 #include "../include/Helper.h"
 #include "../include/FileReader.h"
+#include "../include/Graph.h"
 
 using namespace std;
 

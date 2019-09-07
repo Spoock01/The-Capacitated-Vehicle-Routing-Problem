@@ -1,20 +1,16 @@
 #include "../include/Graph.h"
 
 Graph::Graph(int vertexSize) {
+    std::vector<std::vector<int>> aux(vertexSize, std::vector<int>(vertexSize, -1));
+    this->_adjMatrix = aux;
     this->_vertexSize = vertexSize;
-    this->_adjMatrix = new int*[vertexSize];
-    for(int i = 0; i < vertexSize; i++) {
-        this->_adjMatrix = new int*[vertexSize];
-    }
+    // this->_adjMatrix = new int*[vertexSize];
+    // for(int i = 0; i < vertexSize; i++) {
+    //     this->_adjMatrix = new int*[vertexSize];
+    // }
 }
 
-Graph::~Graph() {
-    for(int i = 0; i < this->_vertexSize; i++) {
-        delete[] this->_adjMatrix[i];
-    }
-
-    delete[] this->_adjMatrix;
-}
+Graph::~Graph() = default;
 
 void Graph::addEdge(int u, int v, int weight) {
     this->_adjMatrix[u][v] = weight;

@@ -113,8 +113,8 @@ void readMatrix(std::vector<std::vector<int>> &weightMatrix)
             else
             {
                 getline(instanceFile, line);
-                // weightMatrix[i][j] = 0;
-                weightMatrix[i][j] = demands[i].getClientDemand();
+                weightMatrix[i][j] = 0;
+                // weightMatrix[i][j] = demands[i].getClientDemand();
                 break;
             }
         }
@@ -172,7 +172,7 @@ void nearestNeighbor()
         {
             if (j != vertex && weightMatrix[vertex][j] < shortestRoute && !visitedVertex[j])
             {
-                if ((load + weightMatrix[j][j]) <= CAPACITY)
+                if ((load + demands[j].getClientDemand()) <= CAPACITY)
                 {
                     shortestRoute = weightMatrix[vertex][j];
                     aux = j;
@@ -182,7 +182,7 @@ void nearestNeighbor()
         route.push_back(aux);
         vertex = aux;
         distance += shortestRoute;
-        load += weightMatrix[vertex][vertex];
+        load += demands[vertex].getClientDemand();
         if (aux != 0)
         {
             visitedVertex[aux] = true;
@@ -197,10 +197,17 @@ void nearestNeighbor()
     route.push_back(0);
     distance += weightMatrix[vertex][0];
 
-    std::cout << "ROUTE: { ";
+    // std::cout << distance << " ROUTE: { ";
+    std::cout << " ROUTE: { ";
     for (int i = 0; i < route.size(); i++)
         std::cout << route[i] << " ";
+    // std::cout << "}\n";
     std::cout << "}\nDistance = " << distance << std::endl;
+}
+
+void printDemand() {
+    for (int i = 0; i < demands.size(); i++)
+        std::cout << i << " = " << demands[i].getClientDemand() << std::endl;
 }
 
 void readFile(std::string file)
@@ -218,8 +225,10 @@ void readFile(std::string file)
         skip(3);        // Skipping DEMAND_SECTION, empty and EDGE_WEIGHT_SECTION
         readMatrix(weightMatrix);
         // show(weightMatrix);
-        nearestNeighbor();
+        // printDemand();
         instanceFile.close();
+        nearestNeighbor();
+        demands.clear();
     }
     else
     {
