@@ -1,23 +1,21 @@
-#include <iostream>
-#include <vector>
-#include <fstream>
-#include <string>
-#include "../include/Helper.h"
 #include "../include/FileReader.h"
 #include "../include/Graph.h"
-
-using namespace std;
+#include "../include/Helper.h"
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
 
 int main()
 {
-    while (true)
-    {
-        menu(); // helper.h
-        readFile(getFileName());
-        std::cin.get();
-        std::cout << "Press enter to continue ...";
-        std::cin.get();
-    }
+	while (true)
+	{
+		menu(); // helper.h
+		readFile(getFileName());
+		std::cin.get();
+		std::cout << "Press enter to continue ...";
+		std::cin.get();
+	}
 
-    return 0;
+	return 0;
 }

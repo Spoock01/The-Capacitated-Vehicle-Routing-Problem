@@ -8,7 +8,7 @@ class Graph
 {
 
 private:
-    //int **_adjMatrix;
+    // int **_adjMatrix;
     int _vertexSize;
     std::vector<std::vector<int>> _adjMatrix;
 
