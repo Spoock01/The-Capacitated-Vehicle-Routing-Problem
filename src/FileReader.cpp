@@ -166,13 +166,16 @@ void changingRoutes(std::vector<std::vector<int>> mainRoute)
 {
     std::vector<std::vector<int>> allRoutes;
 
-    std::cout << "MainRoute Size:" << mainRoute.size() << "\n";
+    // std::cout << "MainRoute Size:" << mainRoute.size() << "\n";
     std::vector<int> g_distance_array(mainRoute.size(), 999);
 
-    for (int Y = 0; Y < mainRoute.size(); Y++)
+    for (int i = 0; i < mainRoute.size(); i++)
     {
-        std::vector<int> route = mainRoute[Y];
-        // std::cout << "Route size ==== " << route.size() << std::endl;
+        std::vector<int> route = mainRoute[i];
+
+        if(route.size() == 1) {
+            allRoutes.push_back(route);
+        }
         for (auto j = 0; j < route.size(); j++)
         {
             for (auto k = 0; k < route.size(); k++)
@@ -188,20 +191,20 @@ void changingRoutes(std::vector<std::vector<int>> mainRoute)
             }
         }
 
-        for (auto i = 0; i < allRoutes.size(); i++)
+        for (auto index = 0; index < allRoutes.size(); index++)
         {
-            auto currentDistance = getDistance(allRoutes[i]);
-            auto var = allRoutes[i].size() - 1;
+            auto currentDistance = getDistance(allRoutes[index]);
+            auto var = allRoutes[index].size() - 1;
 
-            currentDistance += weightMatrix[0][allRoutes[i][0]];
-            currentDistance += weightMatrix[allRoutes[i][var]][0];
-            std::cout << i << " Comparando current: " << currentDistance << "com: " << g_distance_array[Y] << std::endl;
-            if (currentDistance < g_distance_array[Y])
+            currentDistance += weightMatrix[0][allRoutes[index][0]];
+            currentDistance += weightMatrix[allRoutes[index][var]][0];
+            std::cout << index << " Comparando current: " << currentDistance << "com: " << g_distance_array[i] << std::endl;
+            if (currentDistance < g_distance_array[i])
             {
                 // std::cout << "This route is better: ";
-                // printVector(allRoutes[i]);
+                // printVector(allRoutes[index]);
                 // std::cout << "Best current distance: " << currentDistance << std::endl;
-                g_distance_array[Y] = currentDistance;
+                g_distance_array[i] = currentDistance;
             }
         }
 
