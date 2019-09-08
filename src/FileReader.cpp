@@ -126,9 +126,9 @@ void readMatrix(std::vector<std::vector<int>> &weightMatrix)
 
 void show(std::vector<std::vector<int>> &weightMatrix)
 {
-    for (int i = 0; i < DIMENSION; i++)
+    for (int i = 0; i < weightMatrix.size(); i++)
     {
-        for (int j = 0; j < DIMENSION; j++)
+        for (int j = 0; j < weightMatrix[i].size(); j++)
         {
             std::cout << weightMatrix[i][j] << " ";
         }
@@ -162,54 +162,91 @@ int getDistance(std::vector<int> route)
     return count;
 }
 
-auto changingRoutes(std::vector<int> mainRoute)
+void changingRoutes(std::vector<std::vector<int>> mainRoute)
 {
-    // mainRoute.pop_back();
-    // mainRoute.erase(mainRoute.begin());
-
     std::vector<std::vector<int>> allRoutes;
-    auto saveRoute = mainRoute;
 
-    for (auto i = 0; i < mainRoute.size(); i++)
+    std::cout << "MainRoute Size:" << mainRoute.size() << "\n";
+    std::vector<int> g_distance_array(mainRoute.size(), 999);
+
+    for (int Y = 0; Y < mainRoute.size(); Y++)
     {
-        for (auto j = 0; j < mainRoute.size(); j++)
+        std::vector<int> route = mainRoute[Y];
+        // std::cout << "Route size ==== " << route.size() << std::endl;
+        for (auto j = 0; j < route.size(); j++)
         {
-            if (j > i)
+            for (auto k = 0; k < route.size(); k++)
             {
-                std::swap(saveRoute[i], saveRoute[j]);
-                allRoutes.push_back(saveRoute);
+                auto saveRoute = route;
+                auto aux = saveRoute[j];
+                if (k > j)
+                {
+                    saveRoute[j] = saveRoute[k];
+                    saveRoute[k] = aux;
+                    allRoutes.push_back(saveRoute);
+                }
             }
         }
-        saveRoute = mainRoute;
+
+        for (auto i = 0; i < allRoutes.size(); i++)
+        {
+            auto currentDistance = getDistance(allRoutes[i]);
+            auto var = allRoutes[i].size() - 1;
+
+            currentDistance += weightMatrix[0][allRoutes[i][0]];
+            currentDistance += weightMatrix[allRoutes[i][var]][0];
+            std::cout << i << " Comparando current: " << currentDistance << "com: " << g_distance_array[Y] << std::endl;
+            if (currentDistance < g_distance_array[Y])
+            {
+                // std::cout << "This route is better: ";
+                // printVector(allRoutes[i]);
+                // std::cout << "Best current distance: " << currentDistance << std::endl;
+                g_distance_array[Y] = currentDistance;
+            }
+        }
+
+        allRoutes.clear();
     }
 
-    // std::cout << "SHOWING ALL POSSIBLE ROUTES: \n\n";
+    auto count = 0;
 
-    // auto k = 0;
-
-    // for (auto i = 0; i < allRoutes.size(); i++)
-    // {
-    //     std::cout << "Route #" << k << std::endl;
-    //     for (auto j = 0; j < allRoutes[i].size(); j++)
-    //     {
-    //         std::cout << allRoutes[i][j] << " ";
-    //     }
-    //     std::cout << std::endl;
-    //     ++k;
-    // }
-
-    for (auto i = 0; i < allRoutes.size(); i++)
+    for (auto var : g_distance_array)
     {
-        auto currentDistance = getDistance(allRoutes[i]);
+        std::cout << var << std::endl;
+        count += var;
+    }
 
-        if (currentDistance < g_distance)
+    std::cout << "Resultado: " << count << std::endl;
+    count = 0;
+}
+
+auto separateRoutes(std::vector<int> &route)
+{
+
+    std::vector<std::vector<int>> allRoutes;
+    std::vector<int> currentRoute;
+
+    for (auto i = 1; i < route.size() - 1; ++i)
+    {
+
+        if (route[i] == route[i + 1] && route[i] == 0)
         {
-            std::cout << "This route is better: ";
-            printVector(allRoutes[i]);
-            std::cout << "Best current distance: " << currentDistance << std::endl;
-            g_distance = currentDistance;
+            // std::cout << "End \n";
+            allRoutes.push_back(currentRoute);
+            currentRoute.erase(currentRoute.begin(), currentRoute.end());
+            ++i;
+        }
+        else
+        {
+            // std::cout << route[i] << " ";
+            currentRoute.push_back(route[i]);
         }
     }
+    allRoutes.push_back(currentRoute);
+
+    // std::cout << "Separate \n\n\n\n";
+    // show(allRoutes);
+    // std::cout << "++++++++++++++\n\n\n\n";
 
     return allRoutes;
 }
@@ -217,18 +254,18 @@ auto changingRoutes(std::vector<int> mainRoute)
 void nearestNeighbor()
 {
     /*
-      visitedVertex: a array to know which vertex has been visited
-      distance: to count the distance
-      shortestRoute: to know which is the shortest route
-      visitedCount: a visited vertex counter to know if all vertex has been
-     visited vertex: to know the current vertex load: to count how much has been
-     loaded
-  */
+        visitedVertex: a array to know which vertex has been visited
+        distance: to count the distance
+        shortestRoute: to know which is the shortest route
+        visitedCount: a visited vertex counter to know if all vertex has been
+        visited vertex: to know the current vertex load: to count how much has been
+        loaded
+    */
     auto visitedVertex = new bool[DIMENSION];
-    auto distance = 0;
-    auto shortestRoute = 999, visitedCount = 0, vertex = 0, aux = 0;
-    auto load = 0;
+    auto shortestRoute = 0, visitedCount = 0, vertex = 0, aux = 0, distance = 0,
+         load = 0;
     std::vector<int> route;
+    std::vector<std::vector<int>> pauloGuedes;
 
     for (auto i = 0; i < DIMENSION; i++)
     {
@@ -236,6 +273,7 @@ void nearestNeighbor()
     }
 
     route.push_back(0);
+
     while (visitedCount < DIMENSION - 1)
     {
         shortestRoute = 999;
@@ -260,19 +298,23 @@ void nearestNeighbor()
         if (aux != 0)
         {
             visitedVertex[aux] = true;
-            visitedCount++;
+            ++visitedCount;
         }
         else
         {
+            route.push_back(0);
             load = 0;
         }
     }
-
     route.push_back(0);
+
     distance += weightMatrix[vertex][0];
     g_distance = distance;
     getRouteAndDistance(route, distance);
-    changingRoutes(route);
+    changingRoutes(separateRoutes(route));
+
+    // route.clear();
+    // show(pauloGuedes);
 }
 
 void readFile(std::string file)
@@ -291,6 +333,7 @@ void readFile(std::string file)
         readMatrix(weightMatrix);
         nearestNeighbor();
         instanceFile.close();
+        demands.clear();
     }
     else
     {
