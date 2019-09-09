@@ -13,6 +13,7 @@ std::ifstream instanceFile;
 std::vector<Demand> demands;
 std::vector<std::vector<int>> g_weightMatrix;
 std::vector<std::vector<int>> g_routes;
+std::vector<int> g_opt;
 
 int getDimension() { return DIMENSION; }
 
@@ -119,6 +120,17 @@ int rand_int(int range)
     return (int)rand() % range;
 }
 
+std::vector<int> mountRoute(std::vector<int> route, std::vector<int> routeToAppend)
+{
+    for (auto i : routeToAppend)
+    {
+        route.push_back(i);
+    }
+
+    route.push_back(0);
+    return route;
+}
+
 std::vector<int> randomDescentMethod(std::vector<std::vector<int>> &allRoutes,
                                      std::vector<int> &g_distance_array, int i,
                                      std::vector<int> mainRoute)
@@ -147,22 +159,83 @@ std::vector<int> randomDescentMethod(std::vector<std::vector<int>> &allRoutes,
     return bestRoute;
 }
 
-std::vector<int> mountRoute(std::vector<int> route, std::vector<int> routeToAppend)
+std::vector<int> two_opt_change(std::vector<int> route, int index, int k_index)
 {
-    for (auto i : routeToAppend)
+    std::vector<int> newRoute;
+
+    // std::cout << "FOR1!!\n";
+
+    for (auto i = 0; i < index; i++)
     {
-        route.push_back(i);
+        // std::cout << "INDICE: " << i << "VALOR: " << route[i] << "\n";
+        newRoute.push_back(route[i]);
     }
 
-    route.push_back(0);
-    return route;
+    // std::cout << "FOR2!!\n";
+    for (auto i = k_index; i >= index; i--)
+    {
+        // std::cout << "INDICE: " << i << "VALOR: " << route[i] << "\n";
+        newRoute.push_back(route[i]);
+    }
+    // std::cout << "FOR3!!\n";
+    // std::cout << "K+1: " << (k_index + 1) << " routeSize: " << route.size() << "\n";
+    for (auto i = k_index + 1; i < (int)route.size(); i++)
+    {
+        newRoute.push_back(route[i]);
+    }
+
+    // std::cout << "\n\nindex = " << index << " k_index: " << k_index << "\n\n";
+    // std::cout << "two opt route: ";
+    // printVector(newRoute, true);
+    return newRoute;
+}
+
+std::vector<int> two_opt(std::vector<int> mainRoute)
+{
+    auto bestRoute = mainRoute;
+    auto bestDistance = getDistance(bestRoute);
+    auto changed = true;
+
+    while (changed)
+    {
+        changed = false;
+        // std::cout << "Best Route size: " << bestRoute.size() << "\n";
+        for (auto j = 0; j < (int)bestRoute.size(); j++)
+        {
+            bestDistance = getDistance(bestRoute);
+            for (auto k = j + 1; k < (int)bestRoute.size(); k++)
+            {
+                // std::cout << "Calling change with: J{" << j << "} and K{" << k << "}\n";
+                // std::cout << "=={{ROUTE}}== ";
+                // printVector(bestRoute, true);
+                auto new_route = two_opt_change(bestRoute, j, k);
+                auto new_distance = getDistance(new_route);
+
+                if (new_distance < bestDistance)
+                {
+                    // std::cout << "\n\nNEWROUTE: ";
+                    // printVector(new_route, true);
+                    // std::cout << "\n\n";
+                    changed = true;
+                    bestRoute = new_route;
+                    bestDistance = new_distance;
+                    break;
+                }
+            }
+        }
+    }
+    g_opt.push_back(getDistance(bestRoute));
+
+    return bestRoute;
 }
 
 void changingRoutes(std::vector<std::vector<int>> mainRoute)
 {
     std::vector<std::vector<int>> allRoutes;
     std::vector<int> newRoute;
+    std::vector<int> optRoute;
     newRoute.push_back(0);
+    optRoute.push_back(0);
 
     // std::cout << "MainRoute Size: " << mainRoute.size() << "\n";
     std::vector<int> g_distance_array(mainRoute.size(), 999);
@@ -196,6 +269,7 @@ void changingRoutes(std::vector<std::vector<int>> mainRoute)
         newRoute = mountRoute(newRoute, result);
         // std::cout << "BEST ROUTE RECEIVED: ";
         // printVector(result, true);
+        optRoute = mountRoute(optRoute, two_opt(route));
     }
 
     std::cout << "RDM:    ";
@@ -209,7 +283,19 @@ void changingRoutes(std::vector<std::vector<int>> mainRoute)
         count += var;
     }
 
-    std::cout << "\nResultado: " << count << std::endl;
+    std::cout << "\nResultado RDM: " << count << std::endl;
+    count = 0;
+
+    std::cout << "OPT:    ";
+    printVector(optRoute, true);
+
+    for (auto var : g_opt)
+    {
+        // std::cout << var << " ";
+        count += var;
+    }
+
+    std::cout << "\nResultado OPT: " << count << std::endl;
     count = 0;
 }
 
@@ -325,6 +411,7 @@ void readFile(std::string file)
         nearestNeighbor();
         instanceFile.close();
         demands.clear();
+        g_opt.clear();
     }
     else
     {

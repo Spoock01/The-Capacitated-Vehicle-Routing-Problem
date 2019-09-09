@@ -24,8 +24,6 @@ void menu()
     std::cout << "\nChoose one of the above: " << std::endl;
 }
 
-
-
 std::string getFileName()
 {
     int fileNumber = -1;
@@ -59,9 +57,9 @@ std::string getFileName()
 
 void print2dVector(std::vector<std::vector<int>> &vector2D)
 {
-    for (auto i = 0; i < (int) vector2D.size(); i++)
+    for (auto i = 0; i < (int)vector2D.size(); i++)
     {
-        for (auto j = 0; j < (int) vector2D[i].size(); j++)
+        for (auto j = 0; j < (int)vector2D[i].size(); j++)
         {
             std::cout << vector2D[i][j] << " ";
         }
@@ -69,13 +67,13 @@ void print2dVector(std::vector<std::vector<int>> &vector2D)
     }
 }
 
-void printVector(std::vector<int> route, bool endLine=true)
+void printVector(std::vector<int> route, bool endLine = true)
 {
     for (auto i : route)
     {
         std::cout << i << " ";
     }
-    if(endLine)
+    if (endLine)
         std::cout << "\n";
 }
 
