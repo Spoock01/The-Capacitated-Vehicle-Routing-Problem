@@ -31,7 +31,7 @@ void Graph::printMatrix() {
 }
 
 void Graph::nearestNeighbor(int capacity) {
-    bool visitedVertex[this->_vertexSize];
+    auto visitedVertex = new bool[this->_vertexSize];
     int distance = 0;
     int shortestRoute, visitedCount = 0, vertex = 0, aux = 0;
     int load = 0;

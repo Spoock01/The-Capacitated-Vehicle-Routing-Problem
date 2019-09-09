@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++14
+CFLAGS = -std=c++14 -Wall -Werror -Wextra -pedantic -Wpedantic -Wunused -Wshadow -O3
 INCLUDE_PATH = include/
 SRC_PATH = src/
 DIST_PATH = dist/
@@ -8,7 +8,7 @@ EXE = main
 
 all: Demand.o FileReader.o Graph.o Helper.o
 	@mkdir -p $(DIST_PATH)
-	@$(CC) $(CFLAGS) *.o -O3 $(SRC_PATH)main.cpp -o $(DIST_PATH)$(EXE)
+	@$(CC) $(CFLAGS) *.o $(SRC_PATH)main.cpp -o $(DIST_PATH)$(EXE)
 
 Demand.o: $(INCLUDE_PATH)Demand.h $(SRC_PATH)Demand.cpp
 	@$(CC) $(CFLAGS) $(SRC_PATH)Demand.cpp -c
