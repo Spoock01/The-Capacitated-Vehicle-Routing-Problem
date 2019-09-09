@@ -9,7 +9,7 @@ int CAPACITY;
 int g_distance = 0;
 std::ifstream instanceFile;
 std::vector<Demand> demands;
-std::vector<std::vector<int>> weightMatrix;
+std::vector<std::vector<int>> g_weightMatrix;
 
 int getDimension() { return DIMENSION; }
 
@@ -85,7 +85,7 @@ void splitInteger()
         }
     }
     std::vector<std::vector<int>> aux(DIMENSION, std::vector<int>(DIMENSION, -1));
-    weightMatrix = aux;
+    g_weightMatrix = aux;
 }
 
 void readDemands()
@@ -99,10 +99,10 @@ void readDemands()
     }
 }
 
-void readMatrix(std::vector<std::vector<int>> &weightMatrix)
+void readMatrix()
 {
     std::string line;
-    // std::cout << "size: " << weightMatrix.size() << std::endl;
+    // std::cout << "size: " << g_weightMatrix.size() << std::endl;
     int aux = -1;
     for (int i = 0; i < DIMENSION; i++)
     {
@@ -111,27 +111,27 @@ void readMatrix(std::vector<std::vector<int>> &weightMatrix)
             if (i != j)
             {
                 instanceFile >> aux;
-                weightMatrix[i][j] = aux;
-                weightMatrix[j][i] = aux;
+                g_weightMatrix[i][j] = aux;
+                g_weightMatrix[j][i] = aux;
             }
             else
             {
                 getline(instanceFile, line);
-                // weightMatrix[i][j] = 0;
-                weightMatrix[i][j] = demands[i].getClientDemand();
+                // g_weightMatrix[i][j] = 0;
+                g_weightMatrix[i][j] = demands[i].getClientDemand();
                 break;
             }
         }
     }
 }
 
-void show(std::vector<std::vector<int>> &weightMatrix)
+void show(std::vector<std::vector<int>> &m_weightMatrix)
 {
-    for (int i = 0; i < weightMatrix.size(); i++)
+    for (auto i = 0; i < (int) m_weightMatrix.size(); i++)
     {
-        for (int j = 0; j < weightMatrix[i].size(); j++)
+        for (auto j = 0; j < (int) m_weightMatrix[i].size(); j++)
         {
-            std::cout << weightMatrix[i][j] << " ";
+            std::cout << m_weightMatrix[i][j] << " ";
         }
         std::cout << std::endl;
     }
@@ -156,9 +156,9 @@ void getRouteAndDistance(std::vector<int> route, int distance)
 int getDistance(std::vector<int> route)
 {
     auto count = 0;
-    for (auto i = 0; i < route.size() - 1; i++)
+    for (auto i = 0; i < (int) route.size() - 1; i++)
     {
-        count = count + weightMatrix[route[i]][route[i + 1]];
+        count = count + g_weightMatrix[route[i]][route[i + 1]];
     }
     return count;
 }
@@ -175,23 +175,23 @@ void changingRoutes(std::vector<std::vector<int>> mainRoute)
     std::vector<int> g_distance_array(mainRoute.size(), 999);
 
     // Alterando Rotas
-    for (int i = 0; i < mainRoute.size(); i++)
+    for (auto i = 0; i < (int)  mainRoute.size(); i++)
     {
         std::vector<int> route = mainRoute[i];
 
-        auto var = route.size() - 1;
+        auto end = route.size() - 1;
         auto bestDistance = getDistance(route);
-        bestDistance += weightMatrix[0][route[0]];
-        bestDistance += weightMatrix[route[var]][0];
+        bestDistance += g_weightMatrix[0][route[0]];
+        bestDistance += g_weightMatrix[route[end]][0];
         g_distance_array[i] = bestDistance;
         // std::cout << "Best distance: " << bestDistance << "i: " << i << "\n";
 
         if(route.size() == 1) {
             allRoutes.push_back(route);
         }
-        for (auto j = 0; j < route.size(); j++)
+        for (auto j = 0; j < (int) route.size(); j++)
         {
-            for (auto k = 0; k < route.size(); k++)
+            for (auto k = 0; k < (int) route.size(); k++)
             {
                 auto saveRoute = route;
                 auto aux = saveRoute[j];
@@ -211,7 +211,7 @@ void changingRoutes(std::vector<std::vector<int>> mainRoute)
         times = times < 1 ? 0 : times;
 
         // Descida aleatoria
-        for (auto index = 0; index < times; index++)
+        for (auto index = 0; index < (int) times; index++)
         {
             auto randomNumber = rand_int(allRoutes.size());
             // std::cout << "\n\n" ;
@@ -222,8 +222,8 @@ void changingRoutes(std::vector<std::vector<int>> mainRoute)
             auto currentDistance = getDistance(allRoutes[randomNumber]);
             auto var = allRoutes[randomNumber].size() - 1;
 
-            currentDistance += weightMatrix[0][allRoutes[randomNumber][0]];
-            currentDistance += weightMatrix[allRoutes[randomNumber][var]][0];
+            currentDistance += g_weightMatrix[0][allRoutes[randomNumber][0]];
+            currentDistance += g_weightMatrix[allRoutes[randomNumber][var]][0];
             // std::cout << randomNumber << " Comparando current: " << currentDistance << "com: " << g_distance_array[i] << std::endl;
             if (currentDistance < g_distance_array[i])
             {
@@ -255,7 +255,7 @@ auto separateRoutes(std::vector<int> &route)
     std::vector<std::vector<int>> allRoutes;
     std::vector<int> currentRoute;
 
-    for (auto i = 1; i < route.size() - 1; ++i)
+    for (auto i = 1; i < (int) route.size() - 1; ++i)
     {
 
         if (route[i] == route[i + 1] && route[i] == 0)
@@ -310,12 +310,12 @@ void nearestNeighbor()
 
         for (int j = 0; j < DIMENSION; j++)
         {
-            if (j != vertex && weightMatrix[vertex][j] < shortestRoute &&
+            if (j != vertex && g_weightMatrix[vertex][j] < shortestRoute &&
                 !visitedVertex[j])
             {
-                if ((load + weightMatrix[j][j]) <= CAPACITY)
+                if ((load + g_weightMatrix[j][j]) <= CAPACITY)
                 {
-                    shortestRoute = weightMatrix[vertex][j];
+                    shortestRoute = g_weightMatrix[vertex][j];
                     aux = j;
                 }
             }
@@ -323,7 +323,7 @@ void nearestNeighbor()
         route.push_back(aux);
         vertex = aux;
         distance += shortestRoute;
-        load += weightMatrix[vertex][vertex];
+        load += g_weightMatrix[vertex][vertex];
 
         if (aux != 0)
         {
@@ -338,7 +338,7 @@ void nearestNeighbor()
     }
     route.push_back(0);
 
-    distance += weightMatrix[vertex][0];
+    distance += g_weightMatrix[vertex][0];
     g_distance = distance;
     getRouteAndDistance(route, distance);
     changingRoutes(separateRoutes(route));
@@ -360,7 +360,7 @@ void readFile(std::string file)
         skip(1);        // Skipping DEMAND_SECTION line
         readDemands();  // Reading DEMAND_SECTION
         skip(3);        // Skipping DEMAND_SECTION, empty and EDGE_WEIGHT_SECTION
-        readMatrix(weightMatrix);
+        readMatrix();
         nearestNeighbor();
         instanceFile.close();
         demands.clear();
