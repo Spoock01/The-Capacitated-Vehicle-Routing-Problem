@@ -1,4 +1,5 @@
 #include "../include/FileReader.h"
+#include <time.h> 
 
 const std::string INSTANCE_PATH = "./instancias_teste/";
 
@@ -162,16 +163,28 @@ int getDistance(std::vector<int> route)
     return count;
 }
 
+int rand_int(int range){
+    return (int) rand() % range;
+}
+
 void changingRoutes(std::vector<std::vector<int>> mainRoute)
 {
     std::vector<std::vector<int>> allRoutes;
 
-    // std::cout << "MainRoute Size:" << mainRoute.size() << "\n";
+    std::cout << "MainRoute Size:" << mainRoute.size() << "\n";
     std::vector<int> g_distance_array(mainRoute.size(), 999);
 
+    // Alterando Rotas
     for (int i = 0; i < mainRoute.size(); i++)
     {
         std::vector<int> route = mainRoute[i];
+
+        auto var = route.size() - 1;
+        auto bestDistance = getDistance(route);
+        bestDistance += weightMatrix[0][route[0]];
+        bestDistance += weightMatrix[route[var]][0];
+        g_distance_array[i] = bestDistance;
+        // std::cout << "Best distance: " << bestDistance << "i: " << i << "\n";
 
         if(route.size() == 1) {
             allRoutes.push_back(route);
@@ -190,24 +203,37 @@ void changingRoutes(std::vector<std::vector<int>> mainRoute)
                 }
             }
         }
+        // std::cout << "_____________\n";
+        // show(allRoutes);    
+        // std::cout << "_____________\n";
 
-        for (auto index = 0; index < allRoutes.size(); index++)
+        auto times = allRoutes.size()/3;
+        times = times < 1 ? 0 : times;
+
+        // Descida aleatoria
+        for (auto index = 0; index < times; index++)
         {
-            auto currentDistance = getDistance(allRoutes[index]);
-            auto var = allRoutes[index].size() - 1;
+            auto randomNumber = rand_int(allRoutes.size());
+            // std::cout << "\n\n" ;
+            // printVector(allRoutes[randomNumber]);
+            // std::cout << "\n\n" ;
+            // std::cout << "allRoutes.size() " << allRoutes.size() << std::endl;
+            // std::cout << "Random number: " << randomNumber << std::endl;
+            auto currentDistance = getDistance(allRoutes[randomNumber]);
+            auto var = allRoutes[randomNumber].size() - 1;
 
-            currentDistance += weightMatrix[0][allRoutes[index][0]];
-            currentDistance += weightMatrix[allRoutes[index][var]][0];
-            std::cout << index << " Comparando current: " << currentDistance << "com: " << g_distance_array[i] << std::endl;
+            currentDistance += weightMatrix[0][allRoutes[randomNumber][0]];
+            currentDistance += weightMatrix[allRoutes[randomNumber][var]][0];
+            // std::cout << randomNumber << " Comparando current: " << currentDistance << "com: " << g_distance_array[i] << std::endl;
             if (currentDistance < g_distance_array[i])
             {
-                // std::cout << "This route is better: ";
-                // printVector(allRoutes[index]);
+                std::cout << "Truck: #" << i <<" This route is better: ";
+                printVector(allRoutes[index]);
                 // std::cout << "Best current distance: " << currentDistance << std::endl;
                 g_distance_array[i] = currentDistance;
+                index = 0;
             }
         }
-
         allRoutes.clear();
     }
 
@@ -215,11 +241,11 @@ void changingRoutes(std::vector<std::vector<int>> mainRoute)
 
     for (auto var : g_distance_array)
     {
-        std::cout << var << std::endl;
+        std::cout << var << " ";
         count += var;
     }
 
-    std::cout << "Resultado: " << count << std::endl;
+    std::cout << "\nResultado: " << count << std::endl;
     count = 0;
 }
 
@@ -264,6 +290,7 @@ void nearestNeighbor()
         visited vertex: to know the current vertex load: to count how much has been
         loaded
     */
+    std::srand(time(NULL));
     auto visitedVertex = new bool[DIMENSION];
     auto shortestRoute = 0, visitedCount = 0, vertex = 0, aux = 0, distance = 0,
          load = 0;
