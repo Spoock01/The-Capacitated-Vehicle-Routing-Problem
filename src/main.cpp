@@ -5,9 +5,12 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <time.h>
 
 int main()
 {
+	std::srand(time(NULL));
+
 	while (true)
 	{
 		menu(); // helper.h
