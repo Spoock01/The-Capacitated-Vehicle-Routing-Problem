@@ -148,8 +148,8 @@ std::vector<int> randomDescentMethod(std::vector<std::vector<int>> &allRoutes,
         if (currentDistance < g_distance_array[i])
         {
             // std::cout << "Truck: #" << i << " This route is better: ";
-            // printVector(allRoutes[index], true);
-            bestRoute = allRoutes[index];
+            // printVector(allRoutes[randomNumber], true);
+            bestRoute = allRoutes[randomNumber];
             // std::cout << "Best current distance: " << currentDistance << std::endl;
             g_distance_array[i] = currentDistance;
             index = 0;
