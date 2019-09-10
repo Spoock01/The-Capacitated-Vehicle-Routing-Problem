@@ -229,13 +229,51 @@ std::vector<int> two_opt(std::vector<int> mainRoute)
     return bestRoute;
 }
 
+std::vector<int> swapMethod(std::vector<int> mainRoute) {
+    auto bestRoute = mainRoute;
+    auto bestDistance = getDistance(bestRoute);
+    auto changed = true;
+
+    while (changed) {
+        changed = false;
+
+        for (auto i = 0; i < (int) bestRoute.size(); i++) {
+            bestDistance = getDistance(bestRoute);
+
+            for (auto j = 0; j < (int) bestRoute.size(); j++) {
+                if (i != j) {
+                    std::swap(bestRoute[i], bestRoute[j]);
+                    auto new_distance = getDistance(bestRoute);
+
+                    if (new_distance < bestDistance) {
+                        bestDistance = new_distance;
+                        changed = true;
+                    } else {
+                        std::swap(bestRoute[i], bestRoute[j]);
+                    }
+                }
+            }
+        }
+    }
+
+    return bestRoute;
+}
+
+void printResults(std::string method, std::vector<int> route) {
+    std::cout << method << ":\t";
+    printVector(route, true);
+    std::cout << "Resultado " << method << ": " << getDistance(route) << "\n\n";
+}
+
 void changingRoutes(std::vector<std::vector<int>> mainRoute)
 {
     std::vector<std::vector<int>> allRoutes;
     std::vector<int> newRoute;
     std::vector<int> optRoute;
+    std::vector<int> swapRoute;
     newRoute.push_back(0);
     optRoute.push_back(0);
+    swapRoute.push_back(0);
 
     // std::cout << "MainRoute Size: " << mainRoute.size() << "\n";
     std::vector<int> g_distance_array(mainRoute.size(), 999);
@@ -270,33 +308,13 @@ void changingRoutes(std::vector<std::vector<int>> mainRoute)
         // std::cout << "BEST ROUTE RECEIVED: ";
         // printVector(result, true);
         optRoute = mountRoute(optRoute, two_opt(route));
+        swapRoute = mountRoute(swapRoute, swapMethod(route));
     }
 
-    std::cout << "RDM:    ";
-    printVector(newRoute, true);
+    printResults("RDM", newRoute);
+    printResults("OPT", optRoute);
+    printResults("SWAP", swapRoute);
 
-    auto count = 0;
-
-    for (auto var : g_distance_array)
-    {
-        // std::cout << var << " ";
-        count += var;
-    }
-
-    std::cout << "\nResultado RDM: " << count << std::endl;
-    count = 0;
-
-    std::cout << "OPT:    ";
-    printVector(optRoute, true);
-
-    for (auto var : g_opt)
-    {
-        // std::cout << var << " ";
-        count += var;
-    }
-
-    std::cout << "\nResultado OPT: " << count << std::endl;
-    count = 0;
 }
 
 auto separateRoutes(std::vector<int> &route)
@@ -340,7 +358,6 @@ void nearestNeighbor()
     auto shortestRoute = 0, visitedCount = 0, vertex = 0, aux = 0, distance = 0,
          load = 0;
     std::vector<int> route;
-    std::vector<std::vector<int>> pauloGuedes;
 
     for (auto i = 0; i < DIMENSION; i++)
     {
@@ -391,7 +408,6 @@ void nearestNeighbor()
     changingRoutes(separateRoutes(route));
 
     // route.clear();
-    // print2dVector(pauloGuedes);
 }
 
 void readFile(std::string file)
