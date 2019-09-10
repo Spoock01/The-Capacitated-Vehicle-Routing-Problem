@@ -259,6 +259,21 @@ std::vector<int> swapMethod(std::vector<int> mainRoute) {
     return bestRoute;
 }
 
+void vnd(std::vector<int> rdm, std::vector<int> opt, std::vector<int> swap) {
+    auto rdmDistance = getDistance(rdm);
+    auto optDistance = getDistance(opt);
+    auto swapDistance = getDistance(swap);
+
+    std::cout << "BEST ";
+    if (rdmDistance <= optDistance && rdmDistance <= swapDistance) {
+        printRouteAndDistance(rdm, rdmDistance);
+    } else if (optDistance <= rdmDistance && optDistance <= swapDistance) {
+        printRouteAndDistance(opt, optDistance);
+    } else {
+        printRouteAndDistance(swap, swapDistance);
+    }
+}
+
 void printResults(std::string method, std::vector<int> route) {
     std::cout << method << ":\t";
     printVector(route, true);
@@ -314,6 +329,7 @@ void changingRoutes(std::vector<std::vector<int>> mainRoute)
     printResults("RDM", newRoute);
     printResults("OPT", optRoute);
     printResults("SWAP", swapRoute);
+    vnd(newRoute, optRoute, swapRoute);
 
 }
 
@@ -403,8 +419,8 @@ void nearestNeighbor()
     distance += g_weightMatrix[vertex][0];
     g_distance = distance;
     printRouteAndDistance(route, distance);
-    std::cout << "BEFORE: ";
-    printVector(route, true);
+    // std::cout << "BEFORE: ";
+    // printVector(route, true);
     changingRoutes(separateRoutes(route));
 
     // route.clear();
