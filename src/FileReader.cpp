@@ -1,5 +1,7 @@
 #include "../include/FileReader.h"
 #include "../include/Helper.h"
+#include "../include/Graph.h"
+#include "../include/ConstructiveHeuristic.h"
 
 #define METHOD_1 0
 #define METHOD_2 1
@@ -454,11 +456,18 @@ void readFile(std::string file)
         readDemands();  // Reading DEMAND_SECTION
         skip(3);        // Skipping DEMAND_SECTION, empty and EDGE_WEIGHT_SECTION
         readMatrix();
-        nearestNeighbor();
-        instanceFile.close();
-        printCountDemand();
-        demands.clear();
-        g_opt.clear();
+        // nearestNeighbor();
+        // instanceFile.close();
+        // printCountDemand();
+        // demands.clear();
+        // g_opt.clear();
+        std::cout << "Criado o grafo\n";
+        auto graph = Graph<int>();
+        graph.setAdjMatrix(g_weightMatrix);
+        graph.setDemands(demands);
+        // std::cout << graph;
+        auto ch = ConstructiveHeuristic(graph);
+        ch.nearestNeighbor(CAPACITY, DIMENSION);
     }
     else
     {
