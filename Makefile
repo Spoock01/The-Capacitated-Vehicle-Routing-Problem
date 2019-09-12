@@ -6,7 +6,7 @@ DIST_PATH = dist/
 EXE = main
 
 
-all: Demand.o FileReader.o Graph.o Helper.o
+all: Demand.o FileReader.o Graph.o Helper.o ConstructiveHeuristic.o
 	@mkdir -p $(DIST_PATH)
 	@$(CC) $(CFLAGS) *.o $(SRC_PATH)main.cpp -o $(DIST_PATH)$(EXE)
 
@@ -20,6 +20,9 @@ Graph.o: $(INCLUDE_PATH)Graph.h
 
 Helper.o: $(INCLUDE_PATH)Helper.h $(SRC_PATH)Helper.cpp
 	@$(CC) $(CFLAGS) $(SRC_PATH)Helper.cpp -c
+
+ConstructiveHeuristic.o: $(INCLUDE_PATH)ConstructiveHeuristic.h $(SRC_PATH)ConstructiveHeuristic.cpp
+	@$(CC) $(CFLAGS) $(SRC_PATH)ConstructiveHeuristic.cpp -c
 
 clean:
 	@rm -r *.o
