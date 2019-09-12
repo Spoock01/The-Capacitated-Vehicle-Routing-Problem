@@ -11,8 +11,10 @@ int main()
 {
 	std::srand(time(NULL));
 
-	while (true)
-	{
+	while (true){
+		// auto graph = Graph<int>();
+		// graph.createGraph(5, 5, 3);
+		// std::cout << graph;
 		menu(); // helper.h
 		readFile(getFileName());
 		std::cin.get();

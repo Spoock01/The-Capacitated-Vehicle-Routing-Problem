@@ -374,6 +374,7 @@ void nearestNeighbor()
     auto shortestRoute = 0, visitedCount = 0, vertex = 0, aux = 0, distance = 0,
          load = 0;
     std::vector<int> route;
+    bool changed;
 
     for (auto i = 0; i < DIMENSION; i++)
     {
@@ -381,10 +382,12 @@ void nearestNeighbor()
     }
 
     route.push_back(0);
+    visitedVertex[0] = true;
 
     while (visitedCount < DIMENSION - 1)
     {
         shortestRoute = 999;
+        changed = false;
 
         for (int j = 0; j < DIMENSION; j++)
         {
@@ -395,35 +398,46 @@ void nearestNeighbor()
                 {
                     shortestRoute = g_weightMatrix[vertex][j];
                     aux = j;
+                    changed = true;
                 }
             }
         }
-        route.push_back(aux);
-        vertex = aux;
-        distance += shortestRoute;
-        load += g_weightMatrix[vertex][vertex];
 
-        if (aux != 0)
-        {
+        if(changed) {
+            route.push_back(aux);
+            vertex = aux;
+            distance += shortestRoute;
+            load += g_weightMatrix[vertex][vertex];
+            // std::cout << "load sendo incrementado: " << load << "\n";
             visitedVertex[aux] = true;
             ++visitedCount;
-        }
-        else
-        {
-            // route.push_back(0);
+        } else {
+            std::cout << "load: " << load << "\n";
+            route.push_back(0);
+            distance += g_weightMatrix[vertex][0];
+            vertex = 0;
             load = 0;
         }
     }
+    std::cout << "load: " << load << "\n";
     route.push_back(0);
 
     distance += g_weightMatrix[vertex][0];
     g_distance = distance;
-    printRouteAndDistance(route, distance);
+    printRouteAndDistance(route, getDistance(route));
     // std::cout << "BEFORE: ";
     // printVector(route, true);
     changingRoutes(separateRoutes(route));
 
     // route.clear();
+}
+
+void printCountDemand() {
+    int count = 0;
+    for (unsigned i = 0; i < demands.size(); i++) {
+        count += demands[i].getClientDemand();
+    }
+    std::cout << "Contador: " << count << " -> " << (count/(double)VEHICLE) << "\n";
 }
 
 void readFile(std::string file)
@@ -442,6 +456,7 @@ void readFile(std::string file)
         readMatrix();
         nearestNeighbor();
         instanceFile.close();
+        printCountDemand();
         demands.clear();
         g_opt.clear();
     }
