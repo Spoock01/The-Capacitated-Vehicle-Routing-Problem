@@ -53,6 +53,8 @@
         "memory_resource": "cpp",
         "optional": "cpp",
         "string_view": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "ctime": "cpp",
+        "iomanip": "cpp"
     }
 }

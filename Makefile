@@ -16,8 +16,7 @@ Demand.o: $(INCLUDE_PATH)Demand.h $(SRC_PATH)Demand.cpp
 FileReader.o: $(INCLUDE_PATH)FileReader.h $(SRC_PATH)FileReader.cpp
 	@$(CC) $(CFLAGS) $(SRC_PATH)FileReader.cpp -c
 
-Graph.o: $(INCLUDE_PATH)Graph.h $(SRC_PATH)Graph.cpp
-	@$(CC) $(CFLAGS) $(SRC_PATH)Graph.cpp -c
+Graph.o: $(INCLUDE_PATH)Graph.h
 
 Helper.o: $(INCLUDE_PATH)Helper.h $(SRC_PATH)Helper.cpp
 	@$(CC) $(CFLAGS) $(SRC_PATH)Helper.cpp -c
