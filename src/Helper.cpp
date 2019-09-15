@@ -1,4 +1,5 @@
 #include "../include/Helper.h"
+#include "../include/Graph.h"
 #include <iostream>
 #include <vector>
 
@@ -82,4 +83,18 @@ void printRouteAndDistance(std::vector<int> route, int distance)
     std::cout << "ROUTE: { ";
     printVector(route, false);
     std::cout << "}\nDistance = " << distance << "\n\n";
+}
+
+int getDistance(std::vector<int> route, Graph<int>& graph) {
+
+    auto end = route.size() - 1;
+    auto count = 0, bestDistance = 0;
+
+    bestDistance += graph.fetchEdge(0, route[0]);
+    bestDistance += graph.fetchEdge(route[end], 0);
+
+    for (auto i = 0; i < (int)route.size() - 1; i++)
+        count = count + graph.fetchEdge(route[i], route[i + 1]);
+
+    return count + bestDistance;
 }

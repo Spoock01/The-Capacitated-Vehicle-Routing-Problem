@@ -2,6 +2,7 @@
 #include "../include/Helper.h"
 #include "../include/Graph.h"
 #include "../include/ConstructiveHeuristic.h"
+#include <algorithm>
 
 #define METHOD_1 0
 #define METHOD_2 1
@@ -83,8 +84,8 @@ void readMatrix()
             else
             {
                 getline(instanceFile, line);
-                // g_weightMatrix[i][j] = 0;
-                g_weightMatrix[i][j] = demands[i].getClientDemand();
+                g_weightMatrix[i][j] = 0;
+                // g_weightMatrix[i][j] = demands[i].getClientDemand();
                 break;
             }
         }
@@ -361,6 +362,59 @@ auto separateRoutes(std::vector<int> &route)
     return allRoutes;
 }
 
+bool checkNumberRoutes(std::vector<int> route) {
+    auto counterRoutes = 0;
+    for (unsigned i = 1; i < route.size(); i++)
+        if (route[i] == 0)
+            ++counterRoutes;
+
+    return counterRoutes == VEHICLE ? true : false;
+}
+
+std::vector<int> buildRoutesByDemand() {
+    auto auxVector = demands;
+    std::vector<bool> visitedVertex(DIMENSION, false);
+    auto aux = 0, higherDemand = 0, visitedCount = 0, load = 0; 
+    std::vector<int> route;
+    bool changed = false;
+
+    std::cout << "BuildRoutesByDemand\n";
+
+    route.push_back(0);
+    visitedVertex[0] = true;
+
+    while(visitedCount < DIMENSION -1) {
+        higherDemand = 0;
+        changed = false;
+        for(unsigned i = 0; i < demands.size(); i++) {
+            // int vertex = auxVector[i].getClient();
+            if(!visitedVertex[i] && demands[i].getClientDemand() > higherDemand) {
+                if((load + demands[i].getClientDemand()) <= CAPACITY) {
+                    higherDemand = demands[i].getClientDemand();
+                    aux = i;
+                    changed = true;
+                }
+            }
+        }
+
+        if(changed) {
+            route.push_back(aux);
+            load += demands[aux].getClientDemand();
+            visitedVertex[aux] = true;
+            ++visitedCount;
+        } else {
+            route.push_back(0);
+            load = 0;
+        }
+    }
+
+    route.push_back(0);
+
+    printRouteAndDistance(route, getDistance(route));
+
+    return route;
+}
+
 void nearestNeighbor()
 {
     /*
@@ -396,7 +450,7 @@ void nearestNeighbor()
             if (j != vertex && g_weightMatrix[vertex][j] < shortestRoute &&
                 !visitedVertex[j])
             {
-                if ((load + g_weightMatrix[j][j]) <= CAPACITY)
+                if ((load + demands[j].getClientDemand()) <= CAPACITY)
                 {
                     shortestRoute = g_weightMatrix[vertex][j];
                     aux = j;
@@ -409,38 +463,42 @@ void nearestNeighbor()
             route.push_back(aux);
             vertex = aux;
             distance += shortestRoute;
-            load += g_weightMatrix[vertex][vertex];
+            load += demands[vertex].getClientDemand();
             // std::cout << "load sendo incrementado: " << load << "\n";
             visitedVertex[aux] = true;
             ++visitedCount;
         } else {
-            std::cout << "load: " << load << "\n";
+            // std::cout << "load: " << load << "\n";
             route.push_back(0);
             distance += g_weightMatrix[vertex][0];
             vertex = 0;
             load = 0;
         }
     }
-    std::cout << "load: " << load << "\n";
+    // std::cout << "load: " << load << "\n";
     route.push_back(0);
 
     distance += g_weightMatrix[vertex][0];
     g_distance = distance;
-    printRouteAndDistance(route, getDistance(route));
+    if (!checkNumberRoutes(route))
+        route = buildRoutesByDemand();
+    // std::vector<int> auxVec = { 0,2,22,0,8,16,0,17,12,0,4,18,0,6,14,0,3,7,9,0,5,20,15,0,1,10,11,13,19,21,0 };
+    // route = auxVec;
+    printRouteAndDistance(route, getDistance(route)); //tira
     // std::cout << "BEFORE: ";
-    // printVector(route, true);
-    changingRoutes(separateRoutes(route));
+    printVector(route, true);
+    changingRoutes(separateRoutes(route)); //tira
 
     // route.clear();
 }
 
-void printCountDemand() {
-    int count = 0;
-    for (unsigned i = 0; i < demands.size(); i++) {
-        count += demands[i].getClientDemand();
-    }
-    std::cout << "Contador: " << count << " -> " << (count/(double)VEHICLE) << "\n";
-}
+// void printCountDemand() {
+//     int count = 0;
+//     for (unsigned i = 0; i < demands.size(); i++) {
+//         count += demands[i].getClientDemand();
+//     }
+//     std::cout << "Contador: " << count << " -> " << (count/(double)VEHICLE) << "\n";
+// }
 
 void readFile(std::string file)
 {
@@ -457,17 +515,19 @@ void readFile(std::string file)
         skip(3);        // Skipping DEMAND_SECTION, empty and EDGE_WEIGHT_SECTION
         readMatrix();
         // nearestNeighbor();
-        // instanceFile.close();
         // printCountDemand();
-        // demands.clear();
-        // g_opt.clear();
-        std::cout << "Criado o grafo\n";
+
+
         auto graph = Graph<int>();
         graph.setAdjMatrix(g_weightMatrix);
         graph.setDemands(demands);
-        // std::cout << graph;
         auto ch = ConstructiveHeuristic(graph);
-        ch.nearestNeighbor(CAPACITY, DIMENSION);
+        ch.nearestNeighbor(CAPACITY, DIMENSION, VEHICLE);
+        
+        //Nunca apagar
+        demands.clear();
+        g_opt.clear();
+        instanceFile.close();
     }
     else
     {

@@ -9,6 +9,7 @@ private:
 public:
     Demand(int, int);
     int getClientDemand();
+    int getClient();
 };
 
 #endif

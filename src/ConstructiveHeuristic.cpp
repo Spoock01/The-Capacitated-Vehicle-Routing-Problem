@@ -6,33 +6,75 @@ ConstructiveHeuristic::ConstructiveHeuristic(Graph<int> graph) {
     this->m_graph = graph;
 }
 
-int ConstructiveHeuristic::getDistance(std::vector<int> route) {
+// int ConstructiveHeuristic::getDistance(std::vector<int> route) {
 
-    auto end = route.size() - 1;
-    auto count = 0, bestDistance = 0;
+//     auto end = route.size() - 1;
+//     auto count = 0, bestDistance = 0;
 
-    bestDistance += this->m_graph.fetchEdge(0, route[0]);
-    bestDistance += this->m_graph.fetchEdge(route[end], 0);
+//     bestDistance += this->m_graph.fetchEdge(0, route[0]);
+//     bestDistance += this->m_graph.fetchEdge(route[end], 0);
 
-    for (auto i = 0; i < (int)route.size() - 1; i++)
-    {
-        count = count + this->m_graph.fetchEdge(route[i], route[i + 1]);
-    }
+//     for (auto i = 0; i < (int)route.size() - 1; i++)
+//     {
+//         count = count + this->m_graph.fetchEdge(route[i], route[i + 1]);
+//     }
 
-    return count + bestDistance;
+//     return count + bestDistance;
+// }
+
+bool ConstructiveHeuristic::checkNumberRoutes(std::vector<int> route, int vehicles) {
+    auto counterRoutes = 0;
+    for (unsigned i = 1; i < route.size(); i++)
+        if (route[i] == 0)
+            ++counterRoutes;
+
+    return counterRoutes == vehicles ? true : false;
 }
 
-std::vector<int> ConstructiveHeuristic::nearestNeighbor(int capacity, int dimension) {
-    std::cout << this->m_graph;
-    auto visitedVertex = new bool[dimension];
-    auto shortestRoute = 0, visitedCount = 0, vertex = 0, aux = 0, load = 0;
+std::vector<int> ConstructiveHeuristic::buildRoutesByDemand(int capacity, int dimension) {
+    auto aux_demands = this->m_graph.getDemands();
+    auto aux = 0, higherDemand = 0, visitedCount = 0, load = 0; 
+    std::vector<bool> visitedVertex(dimension, false);
     std::vector<int> route;
     bool changed;
 
-    for (auto i = 0; i < dimension; i++)
-    {
-        visitedVertex[i] = false;
+    route.push_back(0);
+    visitedVertex[0] = true;
+
+    while (visitedCount < dimension -1) {
+        higherDemand = 0;
+        changed = false;
+        for (unsigned i = 0; i < aux_demands.size(); i++) {
+            if (!visitedVertex[i] && aux_demands[i].getClientDemand() > higherDemand) {
+                if ((load + aux_demands[i].getClientDemand()) <= capacity) {
+                    higherDemand = aux_demands[i].getClientDemand();
+                    aux = i;
+                    changed = true;
+                }
+            }
+        }
+
+        if (changed) {
+            route.push_back(aux);
+            load += aux_demands[aux].getClientDemand();
+            visitedVertex[aux] = true;
+            ++visitedCount;
+        } else {
+            route.push_back(0);
+            load = 0;
+        }
     }
+    route.push_back(0);
+
+    return route;
+}
+
+std::vector<int> ConstructiveHeuristic::nearestNeighbor(int capacity, int dimension, int vehicles) {
+    // std::cout << this->m_graph;
+    std::vector<bool> visitedVertex(dimension, false);
+    auto shortestRoute = 0, visitedCount = 0, vertex = 0, aux = 0, load = 0;
+    std::vector<int> route;
+    bool changed;
 
     route.push_back(0);
     visitedVertex[0] = true;
@@ -47,7 +89,7 @@ std::vector<int> ConstructiveHeuristic::nearestNeighbor(int capacity, int dimens
             if (j != vertex && this->m_graph.fetchEdge(vertex, j) < shortestRoute &&
                 !visitedVertex[j])
             {
-                if ((load + this->m_graph.fetchDemand(j)) <= capacity)
+                if ((load + this->m_graph.fetchDemandByClient(j)) <= capacity)
                 {
                     shortestRoute = this->m_graph.fetchEdge(vertex, j);
                     aux = j;
@@ -56,24 +98,24 @@ std::vector<int> ConstructiveHeuristic::nearestNeighbor(int capacity, int dimens
             }
         }
 
-        if(changed) {
+        if (changed) {
             route.push_back(aux);
             vertex = aux;
-            load += this->m_graph.fetchDemand(vertex);
-            // std::cout << "load sendo incrementado: " << load << "\n";
+            load += this->m_graph.fetchDemandByClient(vertex);
             visitedVertex[aux] = true;
             ++visitedCount;
         } else {
-            std::cout << "load: " << load << "\n";
             route.push_back(0);
             vertex = 0;
             load = 0;
         }
     }
-    std::cout << "load: " << load << "\n";
     route.push_back(0);
 
-    printRouteAndDistance(route, getDistance(route));
+    if (!checkNumberRoutes(route, vehicles))
+        route = buildRoutesByDemand(capacity, dimension);
+
+    printRouteAndDistance(route, getDistance(route, this->m_graph));
     // std::cout << "BEFORE: ";
     // printVector(route, true);
     // changingRoutes(separateRoutes(route));
