@@ -46,7 +46,11 @@ public:
         this->m_demands = demands;
     }
 
-    int fetchDemand(int client) {
+    std::vector<Demand> getDemands() {
+        return this->m_demands;
+    }
+
+    int fetchDemandByClient(int client) {
         return this->m_demands[client].getClientDemand();
     }
 

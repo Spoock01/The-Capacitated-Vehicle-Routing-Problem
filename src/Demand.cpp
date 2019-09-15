@@ -7,3 +7,5 @@ Demand::Demand(int client, int client_demand)
 }
 
 int Demand::getClientDemand() { return this->_client_demand; }
+
+int Demand::getClient() { return this->_client; }

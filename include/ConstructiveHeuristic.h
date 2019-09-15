@@ -7,6 +7,8 @@ private:
 
 public:
     ConstructiveHeuristic(Graph<int> graph);
-    int getDistance(std::vector<int> route);
-    std::vector<int> nearestNeighbor(int capacity, int dimension);
+    // int getDistance(std::vector<int> route);
+    bool checkNumberRoutes(std::vector<int> route, int vehicles);
+    std::vector<int> buildRoutesByDemand(int capacity, int dimension);
+    std::vector<int> nearestNeighbor(int capacity, int dimension, int vehicles);
 };
