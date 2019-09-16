@@ -98,3 +98,42 @@ int getDistance(std::vector<int> route, Graph<int>& graph) {
 
     return count + bestDistance;
 }
+
+int rand_int(int range) {
+    return (int)rand() % range;
+}
+
+std::vector<std::vector<int>> splitRoutes(std::vector<int> &route) {
+
+    std::vector<std::vector<int>> allRoutes;
+    std::vector<int> currentRoute;
+
+    for (auto i = 1; i < (int)route.size() - 1; ++i)
+    {
+
+        if (route[i] == 0)
+        {
+            // std::cout << "End \n";
+            allRoutes.push_back(currentRoute);
+            currentRoute.erase(currentRoute.begin(), currentRoute.end());
+            // ++i;
+        }
+        else
+        {
+            // std::cout << route[i] << " ";
+            currentRoute.push_back(route[i]);
+        }
+    }
+    allRoutes.push_back(currentRoute);
+    return allRoutes;
+}
+
+std::vector<int> mountRoute(std::vector<int> route, std::vector<int> routeToAppend) {
+    for (auto i : routeToAppend)
+    {
+        route.push_back(i);
+    }
+
+    route.push_back(0);
+    return route;
+}
