@@ -2,25 +2,7 @@
 #include "../include/Helper.h"
 #include <iostream>
 
-ConstructiveHeuristic::ConstructiveHeuristic(Graph<int> graph) {
-    this->m_graph = graph;
-}
-
-// int ConstructiveHeuristic::getDistance(std::vector<int> route) {
-
-//     auto end = route.size() - 1;
-//     auto count = 0, bestDistance = 0;
-
-//     bestDistance += this->m_graph.fetchEdge(0, route[0]);
-//     bestDistance += this->m_graph.fetchEdge(route[end], 0);
-
-//     for (auto i = 0; i < (int)route.size() - 1; i++)
-//     {
-//         count = count + this->m_graph.fetchEdge(route[i], route[i + 1]);
-//     }
-
-//     return count + bestDistance;
-// }
+ConstructiveHeuristic::ConstructiveHeuristic(Graph<int> graph) : m_graph(graph) { }
 
 bool ConstructiveHeuristic::checkNumberRoutes(std::vector<int> route, int vehicles) {
     auto counterRoutes = 0;
