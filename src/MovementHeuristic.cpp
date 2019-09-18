@@ -9,26 +9,42 @@ void MovementHeuristic::printResultsByMethod(std::string method, std::vector<int
     std::cout << "Resultado " << method << ": " << getDistance(route, this->m_graph) << "\n\n";
 }
 
-std::vector<int> MovementHeuristic::randomDescentMethod(std::vector<std::vector<int>> &allRoutes,
-                                     std::vector<int> &g_distance_array, int i,
-                                     std::vector<int> mainRoute) {
+std::vector<int> MovementHeuristic::randomDescentMethod(std::vector<int> mainRoute) {
+
+    std::vector<std::vector<int>> allRoutes;
     auto times = allRoutes.size() / 3;
     times = times < 1 ? 0 : times;
     auto bestRoute = mainRoute;
+    auto bestDistance = getDistance(mainRoute, this->m_graph);
+
+    if (bestRoute.size() == 1)
+        allRoutes.push_back(bestRoute);
+
+    for (auto j = 0; j < (int)bestRoute.size(); j++)
+    {
+        for (auto k = 0; k < (int)bestRoute.size(); k++)
+        {
+            auto saveRoute = bestRoute;
+            auto aux = saveRoute[j];
+            if (k > j)
+            {
+                saveRoute[j] = saveRoute[k];
+                saveRoute[k] = aux;
+                allRoutes.push_back(saveRoute);
+            }
+        }
+    }
+
 
     for (auto index = 0; index < (int)times; index++)
     {
         auto randomNumber = rand_int(allRoutes.size());
         auto currentDistance = getDistance(allRoutes[randomNumber], this->m_graph);
 
-        // std::cout << randomNumber << " Comparando current: " << currentDistance << "com: " << g_distance_array[i] << std::endl;
-        if (currentDistance < g_distance_array[i])
+        if (currentDistance < bestDistance)
         {
-            // std::cout << "Truck: #" << i << " This route is better: ";
-            // printVector(allRoutes[randomNumber], true);
             bestRoute = allRoutes[randomNumber];
-            // std::cout << "Best current distance: " << currentDistance << std::endl;
-            g_distance_array[i] = currentDistance;
+            bestDistance = currentDistance;
             index = 0;
         }
     }
@@ -39,30 +55,15 @@ std::vector<int> MovementHeuristic::randomDescentMethod(std::vector<std::vector<
 std::vector<int> MovementHeuristic::two_opt_change(std::vector<int> route, int index, int k_index) {
     std::vector<int> newRoute;
 
-    // std::cout << "FOR1!!\n";
-
     for (auto i = 0; i < index; i++)
-    {
-        // std::cout << "INDICE: " << i << "VALOR: " << route[i] << "\n";
         newRoute.push_back(route[i]);
-    }
-
-    // std::cout << "FOR2!!\n";
+    
     for (auto i = k_index; i >= index; i--)
-    {
-        // std::cout << "INDICE: " << i << "VALOR: " << route[i] << "\n";
         newRoute.push_back(route[i]);
-    }
-    // std::cout << "FOR3!!\n";
-    // std::cout << "K+1: " << (k_index + 1) << " routeSize: " << route.size() << "\n";
+    
     for (auto i = k_index + 1; i < (int)route.size(); i++)
-    {
         newRoute.push_back(route[i]);
-    }
 
-    // std::cout << "\n\nindex = " << index << " k_index: " << k_index << "\n\n";
-    // std::cout << "two opt route: ";
-    // printVector(newRoute, true);
     return newRoute;
 }
 
@@ -152,7 +153,7 @@ std::vector<int> MovementHeuristic::vnd(std::vector<int> rdm, std::vector<int> o
 
 // Coloquei retorno pq talvez tenha que usar o resultado aqui pra fazer a metaheuristica
 std::vector<int> MovementHeuristic::buildRoutesByMethod(std::vector<std::vector<int>> mainRoute) {
-    std::vector<std::vector<int>> allRoutes;
+
     std::vector<int> newRoute;
     std::vector<int> optRoute;
     std::vector<int> swapRoute;
@@ -161,35 +162,14 @@ std::vector<int> MovementHeuristic::buildRoutesByMethod(std::vector<std::vector<
     optRoute.push_back(0);
     swapRoute.push_back(0);
 
-    // std::cout << "MainRoute Size: " << mainRoute.size() << "\n";
-    std::vector<int> g_distance_array(mainRoute.size(), 999);
+    // std::cout << "MainRoute Size: " << mainRoute.size() << "\n"
 
     // Alterando Rotas
     for (auto i = 0; i < (int)mainRoute.size(); i++)
     {
         std::vector<int> route = mainRoute[i];
-        auto bestDistance = getDistance(route, this->m_graph);
-        g_distance_array[i] = bestDistance;
 
-        if (route.size() == 1)
-            allRoutes.push_back(route);
-
-        for (auto j = 0; j < (int)route.size(); j++)
-        {
-            for (auto k = 0; k < (int)route.size(); k++)
-            {
-                auto saveRoute = route;
-                auto aux = saveRoute[j];
-                if (k > j)
-                {
-                    saveRoute[j] = saveRoute[k];
-                    saveRoute[k] = aux;
-                    allRoutes.push_back(saveRoute);
-                }
-            }
-        }
-
-        auto result = randomDescentMethod(allRoutes, g_distance_array, i, route);
+        auto result = randomDescentMethod(route);
         newRoute = mountRoute(newRoute, result);
         // std::cout << "BEST ROUTE RECEIVED: ";
         // printVector(result, true);
