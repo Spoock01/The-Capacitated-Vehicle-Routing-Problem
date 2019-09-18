@@ -1,16 +1,13 @@
 #include "../include/ConstructiveHeuristic.h"
 #include "../include/Helper.h"
 #include <iostream>
+#include <bits/stdc++.h> 
 
 ConstructiveHeuristic::ConstructiveHeuristic(Graph<int> graph) : m_graph(graph) { }
 
 bool ConstructiveHeuristic::checkNumberRoutes(std::vector<int> route, int vehicles) {
-    auto counterRoutes = 0;
-    for (unsigned i = 1; i < route.size(); i++)
-        if (route[i] == 0)
-            ++counterRoutes;
-
-    return counterRoutes == vehicles ? true : false;
+    auto counterRoutes =  std::count(route.begin(), route.end(), 0) - 1;
+    return counterRoutes == vehicles;
 }
 
 std::vector<int> ConstructiveHeuristic::buildRoutesByDemand(int capacity, int dimension) {
@@ -52,7 +49,7 @@ std::vector<int> ConstructiveHeuristic::buildRoutesByDemand(int capacity, int di
 }
 
 std::vector<int> ConstructiveHeuristic::nearestNeighbor(int capacity, int dimension, int vehicles) {
-    // std::cout << this->m_graph;
+
     std::vector<bool> visitedVertex(dimension, false);
     auto shortestRoute = 0, visitedCount = 0, vertex = 0, aux = 0, load = 0;
     std::vector<int> route;
@@ -98,10 +95,6 @@ std::vector<int> ConstructiveHeuristic::nearestNeighbor(int capacity, int dimens
         route = buildRoutesByDemand(capacity, dimension);
 
     printRouteAndDistance(route, getDistance(route, this->m_graph));
-    // std::cout << "BEFORE: ";
-    // printVector(route, true);
-    // changingRoutes(separateRoutes(route));
 
-    // route.clear();
     return route;
 }

@@ -6,7 +6,7 @@ DIST_PATH = dist/
 EXE = main
 
 
-all: Demand.o FileReader.o Graph.o Helper.o ConstructiveHeuristic.o MovementHeuristic.o
+all: Demand.o FileReader.o Graph.o Helper.o ConstructiveHeuristic.o MovementHeuristic.o TwoOpt.o Movement.o Swap.o RandomDescent.o
 	@mkdir -p $(DIST_PATH)
 	@$(CC) $(CFLAGS) *.o $(SRC_PATH)main.cpp -o $(DIST_PATH)$(EXE)
 
@@ -26,6 +26,18 @@ ConstructiveHeuristic.o: $(INCLUDE_PATH)ConstructiveHeuristic.h $(SRC_PATH)Const
 
 MovementHeuristic.o: $(INCLUDE_PATH)MovementHeuristic.h $(SRC_PATH)MovementHeuristic.cpp
 	@$(CC) $(CFLAGS) $(SRC_PATH)MovementHeuristic.cpp -c
+
+Movement.o: $(INCLUDE_PATH)Movement.h $(SRC_PATH)Movement.cpp
+	@$(CC) $(CFLAGS) $(SRC_PATH)Movement.cpp -c
+
+TwoOpt.o: $(INCLUDE_PATH)TwoOpt.h $(SRC_PATH)TwoOpt.cpp
+	@$(CC) $(CFLAGS) $(SRC_PATH)TwoOpt.cpp -c
+
+Swap.o: $(INCLUDE_PATH)Swap.h $(SRC_PATH)Swap.cpp
+	@$(CC) $(CFLAGS) $(SRC_PATH)Swap.cpp -c
+
+RandomDescent.o: $(INCLUDE_PATH)RandomDescent.h $(SRC_PATH)RandomDescent.cpp
+	@$(CC) $(CFLAGS) $(SRC_PATH)RandomDescent.cpp -c
 
 clean:
 	@rm -r *.o
