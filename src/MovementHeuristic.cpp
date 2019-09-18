@@ -1,12 +1,19 @@
 #include "../include/MovementHeuristic.h"
 #include "../include/Helper.h"
+#include "../include/Movement.h"
+#include "../include/TwoOpt.h"
+#include "../include/RandomDescent.h"
+#include "../include/Swap.h"
+
+#define METHOD(x) (x == 0 ? "RANDOM" : x == 1 ? "SWAP" : "OPT")
+
 
 MovementHeuristic::MovementHeuristic(Graph<int>& graph) : m_graph(graph) { }
 
-void MovementHeuristic::printResultsByMethod(std::string method, std::vector<int> route) {
-    std::cout << method << ":\t";
+void MovementHeuristic::printResultsByMethod(std::vector<int> route) {
+    std::cout << "Distancia final: " << getDistance(route, this->m_graph) << "\n";
+    std::cout << "Rota: ";
     printVector(route, true);
-    std::cout << "Resultado " << method << ": " << getDistance(route, this->m_graph) << "\n\n";
 }
 
 std::vector<int> MovementHeuristic::randomDescentMethod(std::vector<int> mainRoute) {
@@ -95,7 +102,7 @@ std::vector<int> MovementHeuristic::two_opt(std::vector<int> mainRoute) {
                     changed = true;
                     bestRoute = new_route;
                     bestDistance = new_distance;
-                    break;
+                    j = 0;
                 }
             }
         }
@@ -134,52 +141,56 @@ std::vector<int> MovementHeuristic::swapMethod(std::vector<int> mainRoute) {
     return bestRoute;
 }
 
-std::vector<int> MovementHeuristic::vnd(std::vector<int> rdm, std::vector<int> opt, std::vector<int> swap) {
-    auto rdmDistance = getDistance(rdm, this->m_graph);
-    auto optDistance = getDistance(opt, this->m_graph);
-    auto swapDistance = getDistance(swap, this->m_graph);
+std::vector<int> MovementHeuristic::vnd(std::vector<int> route) {
+    // auto rdmDistance = getDistance(rdm, this->m_graph);
+    // auto optDistance = getDistance(opt, this->m_graph);
+    // auto swapDistance = getDistance(swap, this->m_graph);
 
-    std::cout << "BEST ";
-    if (rdmDistance <= optDistance && rdmDistance <= swapDistance) {
-        printRouteAndDistance(rdm, rdmDistance);
-        return rdm;
-    } else if (optDistance <= rdmDistance && optDistance <= swapDistance) {
-        printRouteAndDistance(opt, optDistance);
-        return opt;
+    // std::cout << "BEST ";
+    // if (rdmDistance <= optDistance && rdmDistance <= swapDistance) {
+    //     printRouteAndDistance(rdm, rdmDistance);
+    //     return rdm;
+    // } else if (optDistance <= rdmDistance && optDistance <= swapDistance) {
+    //     printRouteAndDistance(opt, optDistance);
+    //     return opt;
+    // }
+    // printRouteAndDistance(swap, swapDistance);
+    // return swap;
+    Movement *methods[3] = {new RandomDescent(this->m_graph),  new Swap(this->m_graph), new TwoOpt(this->m_graph)};
+    auto method = 0, currentBestDistance = 0, newDistance = 0;
+
+    currentBestDistance = getDistance(route, this->m_graph);
+
+    while(method < 3){
+        newDistance = methods[method]->getMovement(route);
+
+        if(newDistance < currentBestDistance){
+            // std::cout << "MUDOU " << METHOD(method) << ": ";
+            // printVector(route, true);
+            currentBestDistance = newDistance;
+            method = 0;
+            continue;
+        }
+        ++method;
     }
-    printRouteAndDistance(swap, swapDistance);
-    return swap;
+
+    return route;
 }
 
 // Coloquei retorno pq talvez tenha que usar o resultado aqui pra fazer a metaheuristica
 std::vector<int> MovementHeuristic::buildRoutesByMethod(std::vector<std::vector<int>> mainRoute) {
 
     std::vector<int> newRoute;
-    std::vector<int> optRoute;
-    std::vector<int> swapRoute;
-
     newRoute.push_back(0);
-    optRoute.push_back(0);
-    swapRoute.push_back(0);
-
-    // std::cout << "MainRoute Size: " << mainRoute.size() << "\n"
 
     // Alterando Rotas
     for (auto i = 0; i < (int)mainRoute.size(); i++)
     {
         std::vector<int> route = mainRoute[i];
-
-        auto result = randomDescentMethod(route);
-        newRoute = mountRoute(newRoute, result);
-        // std::cout << "BEST ROUTE RECEIVED: ";
-        // printVector(result, true);
-        optRoute = mountRoute(optRoute, two_opt(route));
-        swapRoute = mountRoute(swapRoute, swapMethod(route));
+        newRoute = mountRoute(newRoute, vnd(route));
     }
 
-    printResultsByMethod("RDM", newRoute);
-    printResultsByMethod("OPT", optRoute);
-    printResultsByMethod("SWAP", swapRoute);
+    printResultsByMethod(newRoute);
     
-    return vnd(newRoute, optRoute, swapRoute);
+    return mainRoute[0];
 }
