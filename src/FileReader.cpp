@@ -4,7 +4,8 @@
 #include "../include/ConstructiveHeuristic.h"
 #include "../include/MovementHeuristic.h"
 #include "../include/Grasp.h"
-#include <algorithm>
+// #include <algorithm>
+#include <cmath>
 
 #define METHOD_1 0
 #define METHOD_2 1
@@ -68,30 +69,60 @@ void readDemands()
     }
 }
 
-void readMatrix()
+void readMatrix(int type)
 {
     std::string line;
     auto aux = -1;
 
-    for (int i = 0; i < DIMENSION; i++)
-    {
-        for (int j = 0; j < i + 1; j++)
+    if(type){
+        for (int i = 0; i < DIMENSION; i++)
         {
-            if (i != j)
+            for (int j = 0; j < i + 1; j++)
             {
-                instanceFile >> aux;
-                g_weightMatrix[i][j] = aux;
-                g_weightMatrix[j][i] = aux;
-            }
-            else
-            {
-                getline(instanceFile, line);
-                g_weightMatrix[i][j] = 0;
-                // g_weightMatrix[i][j] = demands[i].getClientDemand();
-                break;
+                if (i != j)
+                {
+                    instanceFile >> aux;
+                    g_weightMatrix[i][j] = aux;
+                    g_weightMatrix[j][i] = aux;
+                }
+                else
+                {
+                    getline(instanceFile, line);
+                    g_weightMatrix[i][j] = 0;
+                    // g_weightMatrix[i][j] = demands[i].getClientDemand();
+                    break;
+                }
             }
         }
+    }else{
+        int vertex, x, y;
+        std::vector<std::pair<int, int>> node;
+
+        for (int i = 0; i < DIMENSION; i++)
+        {
+            instanceFile >> vertex >> x >> y;
+            node.push_back(std::make_pair(x, y));
+            // instanceFile >> vertex1 >> x1 >> y1;
+            // std::cout << "Vertex: " << vertex << " x: " << x << " y: " << y << "\n";
+            // std::cout << "Vertex1: " << vertex1 << " x1: " << x1 << " y1: " << y1 << "\n";
+        }
+
+        for(auto i = 0; i < DIMENSION; i++){
+            for(auto j = 0; j < DIMENSION - 1; j++){
+                auto distancia = (int)hypot(node[i].first-node[j].first,node[i].second-node[j].second);
+
+                if(i != j){
+                    g_weightMatrix[i][j] = distancia;
+                    g_weightMatrix[j][i] = distancia;
+                }else
+                    g_weightMatrix[i][j] = 0;
+            }
+        }
+        // print2dVector(g_weightMatrix);
+        // std::cout << "Acabou";
     }
+
+    
 }
 
 void skip(int times)
@@ -116,7 +147,9 @@ void readFile(std::string file)
         skip(1);        // Skipping DEMAND_SECTION line
         readDemands();  // Reading DEMAND_SECTION
         skip(3);        // Skipping DEMAND_SECTION, empty and EDGE_WEIGHT_SECTION
-        readMatrix();
+
+        readMatrix(file.size() == 28 ? 0 : 1); // 28 = 19 + 9
+
         // nearestNeighbor();
         // printCountDemand();
 

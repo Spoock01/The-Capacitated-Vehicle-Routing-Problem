@@ -5,7 +5,7 @@
 #include "../include/RandomDescent.h"
 #include "../include/Swap.h"
 
-#define METHOD(x) (x == 0 ? "RANDOM" : x == 1 ? "SWAP" : "OPT")
+#define METHOD(x) (x == 0 ? "OPT": x == 1 ? "SWAP" : "RANDOM" )
 
 
 MovementHeuristic::MovementHeuristic(Graph<int>& graph) : m_graph(graph) { }
@@ -156,10 +156,11 @@ std::vector<int> MovementHeuristic::vnd(std::vector<int> route) {
     // }
     // printRouteAndDistance(swap, swapDistance);
     // return swap;
-    Movement *methods[3] = {new RandomDescent(this->m_graph),  new Swap(this->m_graph), new TwoOpt(this->m_graph)};
+    Movement *methods[3] = {new TwoOpt(this->m_graph),  new Swap(this->m_graph), new RandomDescent(this->m_graph)};
     auto method = 0, currentBestDistance = 0, newDistance = 0;
 
     currentBestDistance = getDistance(route, this->m_graph);
+    // unsigned long long int count1 = 0;
 
     while(method < 3){
         newDistance = methods[method]->getMovement(route);
@@ -167,6 +168,7 @@ std::vector<int> MovementHeuristic::vnd(std::vector<int> route) {
         if(newDistance < currentBestDistance){
             // std::cout << "MUDOU " << METHOD(method) << ": ";
             // printVector(route, true);
+            // std::cout << "Melhorou> " << newDistance <<"\n";
             currentBestDistance = newDistance;
             method = 0;
             continue;

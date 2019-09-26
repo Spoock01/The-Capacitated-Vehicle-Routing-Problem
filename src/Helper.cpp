@@ -22,6 +22,9 @@ void menu()
     std::cout << "5 - P-n50-k10" << std::endl;
     std::cout << "6 - P-n51-k10" << std::endl;
     std::cout << "7 - P-n55-k7" << std::endl;
+    std::cout << "8 - cvrp1" << std::endl;
+    std::cout << "9 - cvrp2" << std::endl;
+    std::cout << "10 - cvrp3" << std::endl;
     std::cout << "\nChoose one of the above: " << std::endl;
 }
 
@@ -46,6 +49,12 @@ std::string getFileName()
         return INSTANCE_PATH + "P-n51-k10.txt";
     case 7:
         return INSTANCE_PATH + "P-n55-k7.txt";
+    case 8:
+        return INSTANCE_PATH + "cvrp1.txt";
+    case 9:
+        return INSTANCE_PATH + "cvrp2.txt";
+    case 10:
+        return INSTANCE_PATH + "cvrp3.txt";
     case 0:
         exit(0);
     default:
