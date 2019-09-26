@@ -9,125 +9,226 @@ bool Grasp::compareDemands(Demand& d1, Demand& d2) {
     return d1.getClientDemand() > d2.getClientDemand();
 }
 
-// int Grasp::construction(float alpha, std::vector<int>& route) {
-    // std::vector<Demand> demands_copy = m_graph.getDemands();
-    // std::vector<int> aux_route;
-    // int vector_size = demands_copy.size();
-    // // int best = 1000000;
-    // int load = 0;
-    // int count = 0;
-    // int vertex_count = 0;
-    // // route.push_back(1);
-    // // std::cout << alpha << "\n";
-    // // std::vector<int> visited_vertex(demands_copy.size(), false);
-    // // std::sort(demands_copy.begin(), demands_copy.end(), compareDemands);
-    // demands_copy.pop_back();
-
-    // // so pra saber se tava ordenado
-    // // for(unsigned i=0; i < demands_copy.size(); i++) {
-    // //     std::cout << "Vertice[" << i << "] = " << demands_copy[i].getClient();
-    // //     std::cout << "\tDemanda = " << demands_copy[i].getClientDemand() << "\n";
-    // // }
-
-    // int current_pos = 0;
-    // std::vector<bool> pqp_meu_gato_botou_um_ovo(demands_copy.size(), false);
-
-    // aux_route.push_back(current_pos);
-    // pqp_meu_gato_botou_um_ovo[0] = true;
-    // while (vertex_count < vector_size - 1) {
-
-    //     count = 0;
-    //     while (!demands_copy.empty() && count <= 20) {
-            // int gtmin = 0;
-            // int gtmax = pqp_meu_gato_botou_um_ovo.size() - 1;
-            // int lcr = gtmin + alpha * (gtmax - gtmin);
-            // // if(vertex_count == 16)  std::cout << "lcr = " << lcr << "\n";
-            // int pos = rand_int(lcr + 1);
-
-            
-    //         // break;
-    //         if (!pqp_meu_gato_botou_um_ovo[pos] && (load + demands_copy[pos].getClientDemand() <= m_capacity)) {
-    //             load += demands_copy[pos].getClientDemand();
-    //             aux_route.push_back(demands_copy[pos].getClient());
-    //             ++vertex_count;
-    //             pqp_meu_gato_botou_um_ovo[pos] = true;
-    //             // std::cout << "lcr = " << lcr << "\tpos = " << pos << "\n";
-    //             // std::cout << "demands_copy size = " << demands_copy.size();
-    //             // std::cout << "\tdemands_copy[" << pos << "] = " << demands_copy[pos].getClient() << "\n";
-    //             // std::cout << "vertex_count = " << vertex_count << "\n";
-    //             demands_copy.erase(demands_copy.begin() + pos);
-    //         } else {
-    //             ++count;
-    //         }
-    //     }
-
-    //     // std::cout << "-----------------SAIU----------------------\n";
-    //     load = 0;
-    //     current_pos = 0;
-    //     aux_route.push_back(current_pos);
-    //     // break;
-
-    // }
-    // route = aux_route;
-    // // printRouteAndDistance(route, getDistance(route, m_graph));
-    // return getDistance(route, m_graph);
-// }
+bool Grasp::compareDistance(std::pair<int, int> p1, std::pair<int, int> p2){
+    return p1.first < p2.first;
+}
 
 int Grasp::construction(float alpha, std::vector<int>& route, int dimension) {
+    
+    // route.push_back(0);
+    alpha += 0.0;
+    std::vector<std::vector<std::pair<int, int>>> matrix;
+    std::vector<std::pair<int, int>> line;
+    std::vector<int> c;
+    std::vector<std::pair<int, int>> v;
+    std::vector<int> visited(dimension, false);
+
+    for(auto i = 0; i < (int) dimension; i++){
+        if(i >= 1)
+            c.push_back(i); // inicializando com 0,1,2...
+        for(auto j = 0; j < dimension; j++){
+            line.push_back(std::make_pair(j,m_graph.fetchEdge(i,j)));
+        }
+        matrix.push_back(line);
+        line.clear();
+    }
+
     std::vector<int> aux_route;
-    std::vector<int> pqp(dimension);
-    int load = 0;
+    auto load = 0;
     int count = 0;
-    int vertex_count = 0;
-    std::vector<bool> visited_vertex(dimension, false);
+    int vertex_count = 1;
+    auto actual = 0;
+
+    
+    visited[0] = true;
+    
+
+    for ( int i = 0; i < (int) c.size(); i++ )
+    {
+        std::pair<int, int> aux = std::make_pair( m_graph.fetchEdge(actual, c[i]), c[i]);
+        // std::cout << aux.first << "," << aux.second << " ";
+        v.push_back(aux);
+    }
+    sort(v.begin(), v.end(), compareDistance);
+
+    // for ( int i = 0; i < (int) c.size(); i++ )
+    // {
+
+    //     std::cout << v[i].first << "," << v[i].second << " ";
+
+    // }
 
     aux_route.push_back(0);
-    visited_vertex[0] = true;
-    pqp.pop_back();
-
-    while(vertex_count < (dimension - 2)) {
+    while(true){
+        actual = -1;
         count = 0;
-        while(!pqp.empty() && count <= 40) {
-            int gtmin = 0;
-            int gtmax = dimension - 1;
-            int lcr = gtmin + alpha * (gtmax - gtmin);
-            int pos = rand_int(lcr + 1);
+        // std::cout << "Count: " << count
+        while(!v.empty() && count <= 40){
+            auto gtmin = 0;
+            auto gtmax = v.size() - 1;
+            auto lcr = gtmin + (alpha * (gtmax - gtmin));
+            auto temp = rand_int(lcr + 1);
+            auto pos = v[temp].second;
 
-            if(!visited_vertex[pos] && (load + m_graph.fetchDemandByClient(pos)) <= m_capacity) {
-                pqp.pop_back();
-                load += m_graph.fetchDemandByClient(pos);
-                visited_vertex[pos] = true;
-                aux_route.push_back(pos);
+            if(!visited[pos] && (load + m_graph.fetchDemandByClient(pos)) <= m_capacity){
+                visited[pos] = true;
+                actual = pos;
                 ++vertex_count;
-            } else {
+                load = load + m_graph.fetchDemandByClient(pos);
+
+                for ( int i = 0; i < (int)c.size(); i++ )
+                    if ( c[i] == actual )
+                    {
+                        c.erase(c.begin() + i);
+                        break;
+                    }
+                // std::cout << "Add: " << pos << "\n";
+                aux_route.push_back(pos);
+                v.clear();
+                break;
+
+            }else {
                 ++count;
             }
         }
+        
 
-        aux_route.push_back(0);
-        load = 0;
+        if ( actual == -1 ){
+            load = 0;
+            aux_route.push_back(0);
+            v.clear();
+            // std::cout << "Rota: ";
+            // printVector(aux_route, true);
+        }
+        if(vertex_count == dimension){
+            break;
+        }
+        
+        // for ( int i = 0; i < (int) c.size(); i++ )
+        // {
+        //     if(actual == -1)
+        //         actual = 0;
+            
+        //     std::pair<int, int> aux = std::make_pair( m_graph.fetchEdge(actual, c[i]), c[i]);
+        //     // std::cout << "AuxFirst: " << aux.first << " AuxSecond: " << aux.second << "\n";
+        //     v.push_back(aux);
+        // }
+
+        for ( int i = 0; i < (int) c.size(); i++ )
+        {
+            if(actual == -1)
+                actual = 0;
+            std::pair<int, int> aux = std::make_pair( m_graph.fetchEdge(actual, c[i]), c[i]);
+            // std::cout << aux.first << "," << aux.second << " ";
+            v.push_back(aux);
+        }
+
+        sort(v.begin(), v.end(), compareDistance);
     }
-
+    aux_route.push_back(0);
     route = aux_route;
-    int route_distance = getDistance(route, m_graph);
-    printRouteAndDistance(route, route_distance);
 
-    return route_distance;
+    // std::cout << "C: " << c.size() << "\n";
+    auto dis = getDistance(aux_route, m_graph);
+    // printRouteAndDistance(aux_route, dis);
+    return dis;
 }
+
+// int Grasp::construction(float alpha, std::vector<int>& route, int dimension) {
+//     std::vector<int> aux_route;
+//     std::vector<int> pqp(dimension);
+//     int load = 0;
+//     int count = 0;
+//     int vertex_count = 0;
+//     std::vector<bool> visited_vertex(dimension, false);
+
+//     aux_route.push_back(0);
+//     visited_vertex[0] = true;
+//     pqp.pop_back();
+
+//     while(vertex_count < (dimension - 2)) {
+//         count = 0;
+//         while(!pqp.empty() && count <= 40) {
+//             int gtmin = 0;
+//             int gtmax = dimension - 1;
+//             int lcr = gtmin + alpha * (gtmax - gtmin);
+//             int pos = rand_int(lcr + 1);
+
+//             if(!visited_vertex[pos] && (load + m_graph.fetchDemandByClient(pos)) <= m_capacity) {
+//                 pqp.pop_back();
+//                 load += m_graph.fetchDemandByClient(pos);
+//                 visited_vertex[pos] = true;
+//                 aux_route.push_back(pos);
+//                 ++vertex_count;
+//             } else {
+//                 ++count;
+//             }
+//         }
+
+//         aux_route.push_back(0);
+//         load = 0;
+//     }
+
+//     route = aux_route;
+//     int route_distance = getDistance(route, m_graph);
+//     printRouteAndDistance(route, route_distance);
+
+//     return route_distance;
+// }
 
 void Grasp::buildGrasp(int dimension) {
     int best_distance = 1000000, aux_distance = 0;
+    float alphaB = 0.0;
+    float alpha = 0.0;
+    float bestAlpha = 0.0;
     auto mh = MovementHeuristic(m_graph);
+    auto bestDistance = 10000;
+    
     std::vector<int> aux_route, best_route;
-    for(int i = 0; i < 100; i++) {
-        construction(0.85, aux_route, dimension);
-        mh.vnd(aux_route);
-        aux_distance = getDistance(aux_route, m_graph);
-        if(aux_distance < best_distance) {
-            best_route = aux_route;
-            best_distance = aux_distance;
-        }
-    }
+    // bool is = false;
 
+    for (int j = 1; j <= 20; j++){
+        // is = false;
+        
+        for(int i = 0; i < 50; i++) {
+            construction(alpha, aux_route, dimension);
+            // for(auto o = 0; o < (int) aux_route.size() - 1; o ++){
+            //     if(aux_route[o] == aux_route[o+1] && aux_route[o] == 0){
+            //         aux_route.erase(aux_route.begin() + o);
+            //     }
+            // }
+            // std::cout << "Antes vnd: ";
+            // printVector(aux_route, true);
+            mh.vnd(aux_route);
+
+            aux_distance = getDistance(aux_route, m_graph);
+            if(aux_distance < best_distance) {
+
+                // std::cout << "Received route: ";
+                // printVector(aux_route, true);
+                // std::cout << "Changed! Now: " << aux_distance << std::endl;
+                // printVector(aux_route, true);
+                best_route = aux_route;
+                best_distance = aux_distance;
+                // is = true;'
+            }
+        }
+        if(getDistance(best_route, m_graph) < bestDistance){
+            // std::cout << "Alpha" << alpha << "\n";
+            bestAlpha = alpha;
+            // printRouteAndDistance(best_route, getDistance(best_route, m_graph));
+            bestDistance = getDistance(best_route, m_graph);
+        }
+        alpha = alphaB + (j * 0.05);   
+
+        // if(is){
+            
+        // }
+        // else{
+        //     alpha = alpha + (j * 0.05);
+        // }
+    }
+    std::cout << "Alpha" << bestAlpha << "\n";
     printRouteAndDistance(best_route, getDistance(best_route, m_graph));
+    
 }
