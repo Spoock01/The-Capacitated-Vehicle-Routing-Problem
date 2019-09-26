@@ -3,6 +3,7 @@
 #include "../include/Graph.h"
 #include "../include/ConstructiveHeuristic.h"
 #include "../include/MovementHeuristic.h"
+#include "../include/Grasp.h"
 #include <algorithm>
 
 #define METHOD_1 0
@@ -126,8 +127,12 @@ void readFile(std::string file)
         auto ch = ConstructiveHeuristic(graph);
         auto routess = ch.nearestNeighbor(CAPACITY, DIMENSION, VEHICLE);
         auto mh = MovementHeuristic(graph);
+        auto grasp = Grasp(graph, CAPACITY);
+        std::vector<int> p; //serve pra nada. BLZ?
         // mh.swapMethod();
         mh.buildRoutesByMethod(splitRoutes(routess));
+        // grasp.construction(0.85, p);
+        grasp.buildGrasp(DIMENSION);
 
         //Nunca apagar
         demands.clear();

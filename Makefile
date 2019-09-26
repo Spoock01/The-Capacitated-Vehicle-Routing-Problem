@@ -6,7 +6,7 @@ DIST_PATH = dist/
 EXE = main
 
 
-all: Demand.o FileReader.o Graph.o Helper.o ConstructiveHeuristic.o MovementHeuristic.o TwoOpt.o Movement.o Swap.o RandomDescent.o
+all: Demand.o FileReader.o Graph.o Helper.o ConstructiveHeuristic.o MovementHeuristic.o TwoOpt.o Movement.o Swap.o RandomDescent.o Grasp.o
 	@mkdir -p $(DIST_PATH)
 	@$(CC) $(CFLAGS) *.o $(SRC_PATH)main.cpp -o $(DIST_PATH)$(EXE)
 
@@ -38,6 +38,9 @@ Swap.o: $(INCLUDE_PATH)Swap.h $(SRC_PATH)Swap.cpp
 
 RandomDescent.o: $(INCLUDE_PATH)RandomDescent.h $(SRC_PATH)RandomDescent.cpp
 	@$(CC) $(CFLAGS) $(SRC_PATH)RandomDescent.cpp -c
+
+Grasp.o: $(INCLUDE_PATH)Grasp.h $(SRC_PATH)Grasp.cpp
+	@$(CC) $(CFLAGS) $(SRC_PATH)Grasp.cpp -c
 
 clean:
 	@rm -r *.o
