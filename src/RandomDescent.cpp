@@ -8,7 +8,7 @@ RandomDescent::~RandomDescent(){}
 int RandomDescent::getMovement(std::vector<int>& route){
 
     std::vector<std::vector<int>> allRoutes;
-    auto bestDistance = getDistance(route, this->m_graph);
+    auto bestDistance = getDistance(route, this->m_graph, false);
 
     if (route.size() == 1)
         allRoutes.push_back(route);
@@ -34,7 +34,7 @@ int RandomDescent::getMovement(std::vector<int>& route){
     for (auto index = 0; index < (int)times; index++)
     {
         auto randomNumber = rand_int(allRoutes.size());
-        auto currentDistance = getDistance(allRoutes[randomNumber], this->m_graph);
+        auto currentDistance = getDistance(allRoutes[randomNumber], this->m_graph, false);
 
         if (currentDistance < bestDistance)
         {

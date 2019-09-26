@@ -22,7 +22,7 @@ std::vector<int> TwoOpt::twoOptChange(std::vector<int>& route, const int index_i
 
 int TwoOpt::getMovement(std::vector<int>& mainRoute){
 
-    auto bestDistance = getDistance(mainRoute, this->m_graph);
+    auto bestDistance = getDistance(mainRoute, this->m_graph, false);
     auto changed = true;
 
     while (changed)
@@ -31,12 +31,12 @@ int TwoOpt::getMovement(std::vector<int>& mainRoute){
 
         for (auto j = 0; j < (int)mainRoute.size(); j++)
         {
-            bestDistance = getDistance(mainRoute, this->m_graph);
+            bestDistance = getDistance(mainRoute, this->m_graph, false);
             for (auto k = j + 1; k < (int)mainRoute.size(); k++)
             {
 
                 auto new_route = twoOptChange(mainRoute, j, k);
-                auto new_distance = getDistance(new_route, this->m_graph);
+                auto new_distance = getDistance(new_route, this->m_graph, false);
 
                 if (new_distance < bestDistance)
                 {

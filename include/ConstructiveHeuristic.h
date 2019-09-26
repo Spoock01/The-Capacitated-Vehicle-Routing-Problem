@@ -1,5 +1,8 @@
+#ifndef CONSTRUCTIVE_HEURISTIC_H
+#define CONSTRUCTIVE_HEURISTIC_H
+
+#include "../include/Graph.h"
 #include <vector>
-#include "Graph.h"
 
 class ConstructiveHeuristic {
 private:
@@ -11,3 +14,5 @@ public:
     std::vector<int> buildRoutesByDemand(int capacity, int dimension);
     std::vector<int> nearestNeighbor(int capacity, int dimension, int vehicles);
 };
+
+#endif
