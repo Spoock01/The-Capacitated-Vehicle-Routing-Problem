@@ -2,7 +2,7 @@
 
 ## Tabela de Resultados:    
 
-![Tabela](https://i.imgur.com/tKj623p.png)
+![Tabela](https://i.imgur.com/eeZ2uQJ.png)
 
 ### Colaboradores
 - [Edson Alves](https://github.com/edsonapf)
