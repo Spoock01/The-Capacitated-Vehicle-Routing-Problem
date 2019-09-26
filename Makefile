@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++14 -Wall -Werror -Wextra -pedantic -Wpedantic -Wunused -Wshadow -Ofast
+CFLAGS = -std=c++14 -Wall -Werror -Wextra -pedantic -Wpedantic -Wunused -Wshadow -O3
 INCLUDE_PATH = include/
 SRC_PATH = src/
 DIST_PATH = dist/

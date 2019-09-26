@@ -60,7 +60,7 @@ std::vector<int> ConstructiveHeuristic::nearestNeighbor(int capacity, int dimens
 
     while (visitedCount < dimension - 1)
     {
-        shortestRoute = 999;
+        shortestRoute = 9999999;
         changed = false;
 
         for (int j = 0; j < dimension; j++)
@@ -94,7 +94,7 @@ std::vector<int> ConstructiveHeuristic::nearestNeighbor(int capacity, int dimens
     if (!checkNumberRoutes(route, vehicles))
         route = buildRoutesByDemand(capacity, dimension);
 
-    printRouteAndDistance(route, getDistance(route, this->m_graph));
+    // printRouteAndDistance(route, getDistance(route, this->m_graph, false));
 
     return route;
 }

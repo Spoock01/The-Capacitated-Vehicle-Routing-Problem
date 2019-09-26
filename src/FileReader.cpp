@@ -4,12 +4,8 @@
 #include "../include/ConstructiveHeuristic.h"
 #include "../include/MovementHeuristic.h"
 #include "../include/Grasp.h"
-// #include <algorithm>
+#include <time.h>
 #include <cmath>
-
-#define METHOD_1 0
-#define METHOD_2 1
-#define METHOD_3 2
 
 int DIMENSION;
 int VEHICLE;
@@ -18,8 +14,6 @@ int g_distance = 0;
 std::ifstream instanceFile;
 std::vector<Demand> demands;
 std::vector<std::vector<int>> g_weightMatrix;
-std::vector<std::vector<int>> g_routes;
-std::vector<int> g_opt;
 
 int getDimension() { return DIMENSION; }
 
@@ -40,15 +34,15 @@ void splitInteger()
         {
         case 0:
             DIMENSION = std::stoi(token);
-            // std::cout << "DIMENSION: " << DIMENSION << std::endl;
+
             break;
         case 1:
             VEHICLE = std::stoi(token);
-            // std::cout << "VEHICLE: " << VEHICLE << std::endl;
+
             break;
         case 2:
             CAPACITY = std::stoi(token);
-            // std::cout << "CAPACITY: " << CAPACITY << std::endl;
+
             break;
         default:
             return;
@@ -89,7 +83,6 @@ void readMatrix(int type)
                 {
                     getline(instanceFile, line);
                     g_weightMatrix[i][j] = 0;
-                    // g_weightMatrix[i][j] = demands[i].getClientDemand();
                     break;
                 }
             }
@@ -102,9 +95,6 @@ void readMatrix(int type)
         {
             instanceFile >> vertex >> x >> y;
             node.push_back(std::make_pair(x, y));
-            // instanceFile >> vertex1 >> x1 >> y1;
-            // std::cout << "Vertex: " << vertex << " x: " << x << " y: " << y << "\n";
-            // std::cout << "Vertex1: " << vertex1 << " x1: " << x1 << " y1: " << y1 << "\n";
         }
 
         for(auto i = 0; i < DIMENSION; i++){
@@ -118,8 +108,7 @@ void readMatrix(int type)
                     g_weightMatrix[i][j] = 0;
             }
         }
-        // print2dVector(g_weightMatrix);
-        // std::cout << "Acabou";
+
     }
 
     
@@ -150,26 +139,56 @@ void readFile(std::string file)
 
         readMatrix(file.size() == 28 ? 0 : 1); // 28 = 19 + 9
 
-        // nearestNeighbor();
-        // printCountDemand();
-
-
         auto graph = Graph<int>();
         graph.setAdjMatrix(g_weightMatrix);
         graph.setDemands(demands);
         auto ch = ConstructiveHeuristic(graph);
-        auto routess = ch.nearestNeighbor(CAPACITY, DIMENSION, VEHICLE);
-        auto mh = MovementHeuristic(graph);
+
+        float time1 = 0.0;
+        auto sum1 = 0;
+
+        std::cout << "Greedy\n\n";
+        clock_t t1;
+        t1 = clock();
+
+        for(auto i = 0; i < 10; i++){
+            auto routess = ch.nearestNeighbor(CAPACITY, DIMENSION, VEHICLE);
+            auto mh = MovementHeuristic(graph);
+            auto route = mh.buildRoutesByMethod(splitRoutes(routess));
+            auto dis = getDistance(route, graph, false);
+            printRouteAndDistance(route, dis);
+            sum1 += dis;
+        }
+
+        t1 = clock() - t1;
+        time1 = ((float)t1)/CLOCKS_PER_SEC;
+
+        printf ("It took me (%f ms).\n", (time1/10.0)*1000);
+        printf("Media de distancia: %d\n", sum1/10);
+
+        /*
+            ===================================================================
+        */
+
+        float time = 0.0;
+        auto sum = 0;
         auto grasp = Grasp(graph, CAPACITY);
-        std::vector<int> p; //serve pra nada. BLZ?
-        // mh.swapMethod();
-        mh.buildRoutesByMethod(splitRoutes(routess));
-        // grasp.construction(0.85, p);
-        grasp.buildGrasp(DIMENSION);
+    
+        std::cout << "\n\n\nGRASP\n\n";
+        clock_t t;
+        t = clock();
+
+        for(auto i = 0; i < 10; i++)
+            sum += grasp.buildGrasp(DIMENSION);
+
+        t = clock() - t;
+        time = ((float)t)/CLOCKS_PER_SEC;
+
+        printf ("It took me (%f ms).\n", (time/10.0)*1000);
+        printf("Media de distancia: %d\n", sum/10);
 
         //Nunca apagar
         demands.clear();
-        g_opt.clear();
         instanceFile.close();
     }
     else

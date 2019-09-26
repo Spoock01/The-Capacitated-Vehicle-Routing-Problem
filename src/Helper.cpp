@@ -94,7 +94,7 @@ void printRouteAndDistance(std::vector<int> route, int distance)
     std::cout << "}\nDistance = " << distance << "\n\n";
 }
 
-int getDistance(std::vector<int> route, Graph<int>& graph) {
+int getDistance(std::vector<int> route, Graph<int>& graph, bool t) {
 
     auto end = route.size() - 1;
     auto count = 0, bestDistance = 0;
@@ -102,9 +102,11 @@ int getDistance(std::vector<int> route, Graph<int>& graph) {
     bestDistance += graph.fetchEdge(0, route[0]);
     bestDistance += graph.fetchEdge(route[end], 0);
 
-    for (auto i = 0; i < (int)route.size() - 1; i++)
+    for (auto i = 0; i < (int)route.size() - 1; i++){
+        if(t)
+            std::cout << "De: " << route[i] << " para: " << route[i+1] << " = " << graph.fetchEdge(route[i], route[i + 1]) << "\n";
         count = count + graph.fetchEdge(route[i], route[i + 1]);
-
+    }
     return count + bestDistance;
 }
 
