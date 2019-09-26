@@ -134,48 +134,6 @@ int Grasp::construction(float alpha, std::vector<int>& route, int dimension) {
     return dis;
 }
 
-// int Grasp::construction(float alpha, std::vector<int>& route, int dimension) {
-//     std::vector<int> aux_route;
-//     std::vector<int> pqp(dimension);
-//     int load = 0;
-//     int count = 0;
-//     int vertex_count = 0;
-//     std::vector<bool> visited_vertex(dimension, false);
-
-//     aux_route.push_back(0);
-//     visited_vertex[0] = true;
-//     pqp.pop_back();
-
-//     while(vertex_count < (dimension - 2)) {
-//         count = 0;
-//         while(!pqp.empty() && count <= 40) {
-//             int gtmin = 0;
-//             int gtmax = dimension - 1;
-//             int lcr = gtmin + alpha * (gtmax - gtmin);
-//             int pos = rand_int(lcr + 1);
-
-//             if(!visited_vertex[pos] && (load + m_graph.fetchDemandByClient(pos)) <= m_capacity) {
-//                 pqp.pop_back();
-//                 load += m_graph.fetchDemandByClient(pos);
-//                 visited_vertex[pos] = true;
-//                 aux_route.push_back(pos);
-//                 ++vertex_count;
-//             } else {
-//                 ++count;
-//             }
-//         }
-
-//         aux_route.push_back(0);
-//         load = 0;
-//     }
-
-//     route = aux_route;
-//     int route_distance = getDistance(route, m_graph);
-//     printRouteAndDistance(route, route_distance);
-
-//     return route_distance;
-// }
-
 void Grasp::buildGrasp(int dimension) {
     int best_distance = 1000000, aux_distance = 0;
     float alphaB = 0.0;
@@ -192,6 +150,7 @@ void Grasp::buildGrasp(int dimension) {
         
         for(int i = 0; i < 50; i++) {
             construction(alpha, aux_route, dimension);
+            // std::cout << "Construiu\n\n";
             // for(auto o = 0; o < (int) aux_route.size() - 1; o ++){
             //     if(aux_route[o] == aux_route[o+1] && aux_route[o] == 0){
             //         aux_route.erase(aux_route.begin() + o);
@@ -200,6 +159,7 @@ void Grasp::buildGrasp(int dimension) {
             // std::cout << "Antes vnd: ";
             // printVector(aux_route, true);
             mh.vnd(aux_route);
+            // std::cout << "VND\n\n";
 
             aux_distance = getDistance(aux_route, m_graph);
             if(aux_distance < best_distance) {
