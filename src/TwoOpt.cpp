@@ -3,51 +3,42 @@
 
 TwoOpt::TwoOpt(Graph<int>& graph) : Movement(graph) {}
 
-TwoOpt::~TwoOpt(){}
+TwoOpt::~TwoOpt() {}
 
-std::vector<int> TwoOpt::twoOptChange(std::vector<int>& route, const int index_i, const int index_k){
+std::vector<int> TwoOpt::twoOptChange(std::vector<int>& route, const int index_i,
+                                      const int index_k) {
     std::vector<int> newRoute;
 
-    for (auto i = 0; i < index_i; i++)
-        newRoute.push_back(route[i]);
-    
-    for (auto i = index_k; i >= index_i; i--)
-        newRoute.push_back(route[i]);
-    
-    for (auto i = index_k + 1; i < (int)route.size(); i++)
-        newRoute.push_back(route[i]);
+    for (auto i = 0; i < index_i; i++) newRoute.push_back(route[i]);
+
+    for (auto i = index_k; i >= index_i; i--) newRoute.push_back(route[i]);
+
+    for (auto i = index_k + 1; i < (int)route.size(); i++) newRoute.push_back(route[i]);
 
     return newRoute;
 }
 
-int TwoOpt::getMovement(std::vector<int>& mainRoute){
-
+int TwoOpt::getMovement(std::vector<int>& mainRoute) {
     auto bestDistance = getDistance(mainRoute, this->m_graph, false);
-    auto changed = true;
+    auto changed      = true;
 
-    while (changed)
-    {
+    while (changed) {
         changed = false;
 
-        for (auto j = 0; j < (int)mainRoute.size(); j++)
-        {
+        for (auto j = 0; j < (int)mainRoute.size(); j++) {
             bestDistance = getDistance(mainRoute, this->m_graph, false);
-            for (auto k = j + 1; k < (int)mainRoute.size(); k++)
-            {
-
-                auto new_route = twoOptChange(mainRoute, j, k);
+            for (auto k = j + 1; k < (int)mainRoute.size(); k++) {
+                auto new_route    = twoOptChange(mainRoute, j, k);
                 auto new_distance = getDistance(new_route, this->m_graph, false);
 
-                if (new_distance < bestDistance)
-                {
-                    changed = true;
-                    mainRoute = new_route;
+                if (new_distance < bestDistance) {
+                    changed      = true;
+                    mainRoute    = new_route;
                     bestDistance = new_distance;
-                    j = 0;
+                    j            = 0;
                 }
             }
         }
     }
     return bestDistance;
 }
-

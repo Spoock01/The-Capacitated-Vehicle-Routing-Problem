@@ -1,12 +1,12 @@
 #ifndef FILE_READER_H
 #define FILE_READER_H
 
-#include "../include/Demand.h"
+#include <string.h>
 #include <fstream>
 #include <iostream>
-#include <string.h>
 #include <string>
 #include <vector>
+#include "../include/Demand.h"
 
 std::string getFileName();
 

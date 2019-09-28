@@ -1,8 +1,7 @@
 #ifndef DEMAND_H
 #define DEMAND_H
 
-class Demand
-{
+class Demand {
 private:
     int _client, _client_demand;
 

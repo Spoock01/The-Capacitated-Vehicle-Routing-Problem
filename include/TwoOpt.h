@@ -7,6 +7,7 @@
 class TwoOpt final : public Movement {
 private:
     std::vector<int> twoOptChange(std::vector<int>&, int, int);
+
 public:
     TwoOpt(Graph<int>&);
     ~TwoOpt();

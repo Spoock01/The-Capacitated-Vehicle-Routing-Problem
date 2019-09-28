@@ -1,12 +1,13 @@
 #ifndef HEURISTICS_MOVEMENT_MOVEMENT_H
 #define HEURISTICS_MOVEMENT_MOVEMENT_H
 
-#include "../include/Graph.h"
 #include <vector>
+#include "../include/Graph.h"
 
 class Movement {
 protected:
     Graph<int>& m_graph;
+
 public:
     Movement(Graph<int>&);
     virtual ~Movement();

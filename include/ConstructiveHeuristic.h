@@ -1,8 +1,8 @@
 #ifndef CONSTRUCTIVE_HEURISTIC_H
 #define CONSTRUCTIVE_HEURISTIC_H
 
-#include "../include/Graph.h"
 #include <vector>
+#include "../include/Graph.h"
 
 class ConstructiveHeuristic {
 private:

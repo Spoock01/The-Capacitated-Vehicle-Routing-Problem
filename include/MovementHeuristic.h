@@ -1,6 +1,5 @@
-#include "Graph.h"
 #include <vector>
-
+#include "Graph.h"
 
 class MovementHeuristic {
 private:
